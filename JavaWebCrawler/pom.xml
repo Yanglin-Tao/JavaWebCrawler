@@ -9,6 +9,11 @@
 	    <artifactId>jsoup</artifactId>
 	    <version>1.14.3</version>  <!-- Use the latest version -->
 	  </dependency>
+	  <dependency>
+	    <groupId>org.seleniumhq.selenium</groupId>
+	    <artifactId>selenium-java</artifactId>
+	    <version>3.141.59</version>
+	  </dependency>
   </dependencies>
   <build>
     <sourceDirectory>src</sourceDirectory>

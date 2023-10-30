@@ -17,6 +17,7 @@ public class WebCrawler {
     private final String keyword;
     private final Set<String> visitedUrls = new HashSet<>();
     private final Set<String> foundArticles = new HashSet<>();
+    private final Set<String> articleTitles = new HashSet<>();
     private final ExecutorService executorService;
 
     public WebCrawler(String rootUrl, String keyword, int numThreads) {
@@ -34,6 +35,7 @@ public class WebCrawler {
             e.printStackTrace();
         }
         System.out.println("Found articles: " + foundArticles);
+        System.out.println("Article titles: " + articleTitles);
     }
 
     private void crawl(String url) {
@@ -41,10 +43,12 @@ public class WebCrawler {
             return;
         }
         visitedUrls.add(url);
+        System.out.println(url);
         executorService.submit(() -> {
             try {
                 Document doc = Jsoup.connect(url).get();
-                if (doc.text().contains(keyword)) {
+                System.out.println(doc.title());
+                if (doc.text().toLowerCase().contains(keyword)) {
                     synchronized (foundArticles) {
                         foundArticles.add(url);
                     }
@@ -56,6 +60,12 @@ public class WebCrawler {
                         crawl(absHref);
                     }
                 }
+                Elements newsTitles = doc.select("a.govuk-link");
+                for (Element title : newsTitles) {
+                    synchronized (articleTitles) {
+                        articleTitles.add(title.text());
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -64,7 +74,7 @@ public class WebCrawler {
 
     public static void main(String[] args) {
         // Example usage
-        WebCrawler crawler = new WebCrawler("https://www.gov.uk/", "climate", 10);
+        WebCrawler crawler = new WebCrawler("https://www.gov.uk/search/news-and-communications", "pm", 2000);
         crawler.start();
     }
 }
