@@ -16,3 +16,6 @@ In the current phase, the crawler should count the number of articles, i.e. arti
 
 ### Scope of the search
 Both number of threads and number of webpages to crawl can be specified in the crawler.
+
+### Troubleshooting
+If you encountered error like `org.openqa.selenium.SessionNotCreatedException: session not created`, it's likely that your ChromeDriver version is not compactible with your current Chrome browser version. In that case, run `brew install chromedriver` again and update Chrome browser to the latest version.

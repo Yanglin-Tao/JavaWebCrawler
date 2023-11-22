@@ -9,7 +9,9 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,12 +23,16 @@ public class SeleniumCrawler {
     private final String keyword;
     private final int maxPages;
     private final Set<String> visitedUrls = new HashSet<>();
-    private final Set<String> totalArticleTitles = new HashSet<>();
-    private final Set<String> strongRelationshipArticleTitles = new HashSet<>();
-    private final Set<String> weakRelationshipArticleTitles = new HashSet<>();
+    private final Map<String, String> totalArticles = new HashMap<>();
+    private final Map<String, String> strongRelationshipArticles = new HashMap<>();
+    private final Map<String, String> weakRelationshipArticles = new HashMap<>();
+    
     private final ExecutorService executorService;
     private ArrayList<String> strongRelationKeywordList = new ArrayList<String>();
     private ArrayList<String> weakRelationKeywordList = new ArrayList<String>();
+    
+    private long startTime;
+    private long endTime;
 
     public SeleniumCrawler(String rootUrl, String keyword, int numThreads, int maxPages) {
         this.rootUrl = rootUrl;
@@ -43,6 +49,7 @@ public class SeleniumCrawler {
     }
 
     public void start() {
+    	startTime = System.currentTimeMillis();
     	int pageNum = 1;
         while(pageNum <= maxPages) {
             crawl(rootUrl + "?page=" + pageNum);
@@ -54,21 +61,31 @@ public class SeleniumCrawler {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        endTime = System.currentTimeMillis();
+        
         System.out.println("DONE. Finished parsing " + maxPages + " pages");
-        for (String title : totalArticleTitles) {
-        	System.out.println(title);
+        long totalTime = endTime - startTime;
+        System.out.println("Total execution time: " + totalTime/1000 + " s");
+        
+        for (Map.Entry<String, String> entry : totalArticles.entrySet()) {
+            System.out.println(entry.getKey() + " - Updated on: " + entry.getValue());
         }
-        System.out.println("Number of articles with weak or strong relationship found: " + totalArticleTitles.size());
+        System.out.println("Number of articles with weak or strong relationship found: " + totalArticles.size());
+        
         System.out.println("---------------------------------------------------------------------------------------");
-        for (String title : strongRelationshipArticleTitles) {
-        	System.out.println(title);
+        
+        for (Map.Entry<String, String> entry : strongRelationshipArticles.entrySet()) {
+            System.out.println(entry.getKey() + " - Updated on: " + entry.getValue());
         }
-        System.out.println("Number of articles with strong relationship found: " + strongRelationshipArticleTitles.size());
+        System.out.println("Number of articles with strong relationship found: " + strongRelationshipArticles.size());
+        
         System.out.println("---------------------------------------------------------------------------------------");
-        for (String title : weakRelationshipArticleTitles) {
-        	System.out.println(title);
+        
+        for (Map.Entry<String, String> entry : weakRelationshipArticles.entrySet()) {
+            System.out.println(entry.getKey() + " - Updated on: " + entry.getValue());
         }
-        System.out.println("Number of articles with weak relationship found: " + weakRelationshipArticleTitles.size());
+        System.out.println("Number of articles with weak relationship found: " + weakRelationshipArticles.size());
+        
         System.out.println("---------------------------------------------------------------------------------------");
     }
 
@@ -86,19 +103,21 @@ public class SeleniumCrawler {
                 String htmlContent = driver.getPageSource();
                 Document doc = Jsoup.parse(htmlContent);
 
-                // System.out.println(doc.title());
-
                 Elements newsTitles = doc.select("a[data-ga4-ecommerce-path^=/government/news/]");
                 for (Element title : newsTitles) {
-                    synchronized (totalArticleTitles) {
-                    	if (title.text().toLowerCase().contains(keyword) && (isStrongRelationship(title.text().toLowerCase()) || (isWeakRelationship(title.text().toLowerCase())))) {
-                    		totalArticleTitles.add(title.text());
+                    synchronized (totalArticles) {
+                    	String articleTitle = title.text();
+                    	Element listItem = title.closest("li.gem-c-document-list__item");
+                    	String articleDate = listItem.select("time").attr("datetime");
+                    	if (articleTitle.toLowerCase().contains(keyword) && (isStrongRelationship(articleTitle.toLowerCase()) || (isWeakRelationship(articleTitle.toLowerCase())))) {
+                    		totalArticles.put(articleTitle, articleDate);
                     	} 
-                    	if (title.text().toLowerCase().contains(keyword) && isStrongRelationship(title.text().toLowerCase())) {
-                    		strongRelationshipArticleTitles.add(title.text());
+                    	if (articleTitle.toLowerCase().contains(keyword) && isStrongRelationship(articleTitle.toLowerCase())) {
+                    		strongRelationshipArticles.put(articleTitle, articleDate);
                     	} 
-                    	if (title.text().toLowerCase().contains(keyword) && isWeakRelationship(title.text().toLowerCase())) {
-                    		weakRelationshipArticleTitles.add(title.text());
+                    	if (articleTitle.toLowerCase().contains(keyword) && isWeakRelationship(articleTitle.toLowerCase())) {
+                    		weakRelationshipArticles.put(articleTitle, articleDate);
+                    		
                     	}
                     }
                 }
