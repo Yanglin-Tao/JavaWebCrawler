@@ -22,9 +22,9 @@ public class SeleniumCrawler {
     private final String rootUrl;
     private final String keyword;
     private final int maxPages;
-    private final Set<String> visitedUrls = new HashSet<>();
+	private final Set<String> visitedUrls = new HashSet<>();
     private final Map<String, String> totalArticles = new HashMap<>();
-    private final Map<String, String> strongRelationshipArticles = new HashMap<>();
+	private final Map<String, String> strongRelationshipArticles = new HashMap<>();
     private final Map<String, String> weakRelationshipArticles = new HashMap<>();
     
     private final ExecutorService executorService;
@@ -33,8 +33,9 @@ public class SeleniumCrawler {
     
     private long startTime;
     private long endTime;
+    private long totalTime;
 
-    public SeleniumCrawler(String rootUrl, String keyword, int numThreads, int maxPages) {
+	public SeleniumCrawler(String rootUrl, String keyword, int numThreads, int maxPages) {
         this.rootUrl = rootUrl;
         this.keyword = keyword;
         this.executorService = Executors.newFixedThreadPool(numThreads);
@@ -64,7 +65,7 @@ public class SeleniumCrawler {
         endTime = System.currentTimeMillis();
         
         System.out.println("DONE. Finished parsing " + maxPages + " pages");
-        long totalTime = endTime - startTime;
+        totalTime = endTime - startTime;
         System.out.println("Total execution time: " + totalTime/1000 + " s");
         
         for (Map.Entry<String, String> entry : totalArticles.entrySet()) {
@@ -146,11 +147,26 @@ public class SeleniumCrawler {
     	}
 	    return false;
 	}
+    
+    public Map<String, String> getTotalArticles() {
+		return totalArticles;
+	}
 
-    public static void main(String[] args) {
-        SeleniumCrawler crawler = new SeleniumCrawler("https://www.gov.uk/search/news-and-communications", "climate", 1000, 150);
-        crawler.start();
-    }
+	public Map<String, String> getStrongRelationshipArticles() {
+		return strongRelationshipArticles;
+	}
+
+	public Map<String, String> getWeakRelationshipArticles() {
+		return weakRelationshipArticles;
+	}
+	
+	public long getTotalTime() {
+		return totalTime;
+	}
+    
+    public int getMaxPages() {
+		return maxPages;
+	}
 }
 
 
