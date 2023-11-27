@@ -167,6 +167,12 @@ public class SeleniumCrawler {
     public int getMaxPages() {
 		return maxPages;
 	}
+    
+    // comment out the code if you are connecting to gui
+    public static void main(String[] args) {
+        SeleniumCrawler crawler = new SeleniumCrawler("https://www.gov.uk/search/news-and-communications", "climate", 1000, 150);
+        crawler.start();
+    }
 }
 
 
