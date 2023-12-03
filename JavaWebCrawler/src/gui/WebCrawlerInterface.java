@@ -12,13 +12,16 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -36,6 +39,8 @@ public class WebCrawlerInterface extends JFrame{
 	private JTextArea textArea;
 	private static String selectedCountry = "UK";
 	private DefaultCategoryDataset dataset;
+	private int maxPages = 300;
+	private JTextField maxPagesTextField;
 	
 	public WebCrawlerInterface() {
 		dataset = createBarChartDataset();
@@ -44,7 +49,9 @@ public class WebCrawlerInterface extends JFrame{
 	}
 	
 	private void crawlData() {
-        SeleniumCrawler crawler = new SeleniumCrawler("https://www.gov.uk/search/news-and-communications", "climate", 1000, 150);
+		int maxPagesValue = Integer.parseInt(maxPagesTextField.getText());
+		
+        SeleniumCrawler crawler = new SeleniumCrawler("https://www.gov.uk/search/news-and-communications", "climate", 150, maxPagesValue);
         crawler.start();
         updateDatasetWithCrawledData(crawler);
         chartPanel.getChart().fireChartChanged();
@@ -58,6 +65,13 @@ public class WebCrawlerInterface extends JFrame{
         mainPanel.add(chartPanel, BorderLayout.CENTER);
 		
 		JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		
+		JLabel maxPagesLabel = new JLabel("Max Pages:");
+	    controlPanel.add(maxPagesLabel);
+
+	    maxPagesTextField = new JTextField(String.valueOf(maxPages), 5);
+	    controlPanel.add(maxPagesTextField);
+
 		crawlButton = new JButton("Crawl");
 		crawlButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -65,6 +79,9 @@ public class WebCrawlerInterface extends JFrame{
                 chartPanel.updateUI();
             }
         });
+		JLabel countryLabel = new JLabel("Selected Country: ");
+	    controlPanel.add(countryLabel);
+		controlPanel.add(createCountryComboBox());
 		controlPanel.add(crawlButton);
 		mainPanel.add(controlPanel, BorderLayout.SOUTH);
 		add(mainPanel);
@@ -141,6 +158,11 @@ public class WebCrawlerInterface extends JFrame{
 	    chartPanel = new ChartPanel(chart);
 	    return chartPanel;
 	}	
+	
+	private void updateChartTitle() {
+	    String chartTitle = "Article Count Over Time in " + selectedCountry;
+	    chartPanel.getChart().setTitle(chartTitle);
+	}
 
 	private void updateDatasetWithCrawledData(SeleniumCrawler crawler) {
 	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
@@ -196,32 +218,32 @@ public class WebCrawlerInterface extends JFrame{
         return monthsBetween;
     }
 	
-	public static JMenu createMenu(WebCrawlerInterface frame) {
-      JMenu menu = new JMenu("Select Country");
-      JMenuItem c1 = new JMenuItem("UK");   
-      c1.addActionListener(e -> {
-          selectedCountry = "UK";
-      });
-      JMenuItem c2 = new JMenuItem("Germany");    
-      c2.addActionListener(e -> {
-          selectedCountry = "Germany";
-      });
-      JMenuItem c3 = new JMenuItem("France");    
-      c3.addActionListener(e -> {
-          selectedCountry = "France";
-      });
-      menu.add(c1);
-      menu.add(c2);
-      menu.add(c3);
-      return menu;
+    private JComboBox<String> createCountryComboBox() {
+        String[] countries = {"UK", "Germany", "France"};
+        JComboBox<String> comboBox = new JComboBox<>(countries);
+        comboBox.setSelectedItem(selectedCountry);
+        comboBox.addActionListener(e -> {
+            selectedCountry = (String) comboBox.getSelectedItem();
+            updateChartTitle();
+        });
+        return comboBox;
     }
+    
+    public static JMenu createFileMenu(WebCrawlerInterface frame) {
+        JMenu menu = new JMenu("File");
+        JMenuItem item = new JMenuItem("Exit");      
+        item.addActionListener((e) -> System.exit(0));
+        menu.add(item);
+        return menu;
+    }
+  	
 	
 	public static void main(String[] args) {
 		JFrame frame = new WebCrawlerInterface(); 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 		JMenuBar menuBar = new JMenuBar();     
 	    frame.setJMenuBar(menuBar);
-	    menuBar.add(createMenu((WebCrawlerInterface) frame));
+	    menuBar.add(createFileMenu((WebCrawlerInterface) frame));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         frame.setVisible(true);
