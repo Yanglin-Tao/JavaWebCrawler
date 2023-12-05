@@ -100,14 +100,17 @@ public class WebCrawlerInterface extends JFrame{
         StringBuilder info = new StringBuilder();
         info.append("DONE. Finished parsing ").append(crawler.getMaxPages()).append(" pages\n");
         info.append("Total execution time: ").append(crawler.getTotalTime() / 1000).append(" s\n");
+        
+        info.append("Contains keyword articles:\n");
+        appendArticlesInfo(info, crawler.getContainsKeywordArticles());
 
-        info.append("Total articles:\n");
-        appendArticlesInfo(info, crawler.getTotalArticles());
+        info.append("Weak and strong relationship articles:\n");
+        appendArticlesInfo(info, crawler.getWeakAndStrongRelationshipArticles());
 
-        info.append("Strong Relationship Articles:\n");
+        info.append("Strong relationship articles:\n");
         appendArticlesInfo(info, crawler.getStrongRelationshipArticles());
 
-        info.append("Weak Relationship Articles:\n");
+        info.append("Weak relationship articles:\n");
         appendArticlesInfo(info, crawler.getWeakRelationshipArticles());
 
         textArea.setText(info.toString());
@@ -170,7 +173,7 @@ public class WebCrawlerInterface extends JFrame{
 
 	    int[] intervals = {1, 3, 6, 12};
 
-	    for (Map.Entry<String, String> entry : crawler.getTotalArticles().entrySet()) {
+	    for (Map.Entry<String, String> entry : crawler.getWeakAndStrongRelationshipArticles().entrySet()) {
 	        String articleTitle = entry.getKey();
 	        String articleDateStr = entry.getValue();
 	        try {

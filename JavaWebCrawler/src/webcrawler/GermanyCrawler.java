@@ -17,14 +17,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class SeleniumCrawler {
+public class GermanyCrawler {
 
     private final String rootUrl;
     private final String keyword;
     private final int maxPages;
 	private final Set<String> visitedUrls = new HashSet<>();
 	private final Map<String, String> containsKeywordArticles = new HashMap<>();
-    private final Map<String, String> weakAndStrongRelationshipArticles = new HashMap<>();
+	private final Map<String, String> weakAndStrongRelationshipArticles = new HashMap<>();
 	private final Map<String, String> strongRelationshipArticles = new HashMap<>();
     private final Map<String, String> weakRelationshipArticles = new HashMap<>();
     
@@ -36,7 +36,7 @@ public class SeleniumCrawler {
     private long endTime;
     private long totalTime;
 
-	public SeleniumCrawler(String rootUrl, String keyword, int numThreads, int maxPages) {
+	public GermanyCrawler(String rootUrl, String keyword, int numThreads, int maxPages) {
         this.rootUrl = rootUrl;
         this.keyword = keyword;
         this.executorService = Executors.newFixedThreadPool(numThreads);
@@ -112,15 +112,16 @@ public class SeleniumCrawler {
                 String htmlContent = driver.getPageSource();
                 Document doc = Jsoup.parse(htmlContent);
 
-                Elements newsTitles = doc.select("a[data-ga4-ecommerce-path^=/government/news/]");
-                for (Element title : newsTitles) {
+                Elements newsItems = doc.select("ol.bpa-search-result-list li.bpa-search-result-full");
+
+                for (Element item : newsItems) {
                     synchronized (weakAndStrongRelationshipArticles) {
-                    	String articleTitle = title.text();
-                    	Element listItem = title.closest("li.gem-c-document-list__item");
-                    	String articleDate = listItem.select("time").attr("datetime");
-                    	handleResults(articleTitle, articleDate);
+                        String articleTitle = item.select("span.bpa-teaser-title-text-inner").text();
+                        String articleDate = item.select("time").attr("datetime");
+                        handleResults(articleTitle, articleDate);
                     }
                 }
+                
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -188,11 +189,7 @@ public class SeleniumCrawler {
     
     // comment out the code if you are connecting to gui
     public static void main(String[] args) {
-        SeleniumCrawler crawler = new SeleniumCrawler("https://www.gov.uk/search/news-and-communications", "climate", 150, 300);
+        GermanyCrawler crawler = new GermanyCrawler("https://www.bundesregierung.de/breg-en/news", "climate", 50, 50);
         crawler.start();
     }
 }
-
-
-
-
