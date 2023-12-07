@@ -116,7 +116,6 @@ public class SeleniumCrawler {
                 for (Element item : newsItems) {
                     synchronized (weakAndStrongRelationshipArticles) {
                     	String articleTitle = item.select("a.govuk-link").text();
-                    	System.out.println(articleTitle);
                     	String articleDate = item.select("time").attr("datetime");
                     	handleResults(articleTitle, articleDate);
                     }
