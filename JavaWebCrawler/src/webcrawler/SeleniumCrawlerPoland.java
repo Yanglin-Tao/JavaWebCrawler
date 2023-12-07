@@ -8,7 +8,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,7 +23,8 @@ public class SeleniumCrawlerPoland {
     private final String keyword;
     private final int maxPages;
 	private final Set<String> visitedUrls = new HashSet<>();
-    private final Map<String, String> totalArticles = new HashMap<>();
+	private final Map<String, String> containsKeywordArticles = new HashMap<>();
+	private final Map<String, String> weakAndStrongRelationshipArticles = new HashMap<>();
 	private final Map<String, String> strongRelationshipArticles = new HashMap<>();
     private final Map<String, String> weakRelationshipArticles = new HashMap<>();
     
@@ -69,10 +69,17 @@ public class SeleniumCrawlerPoland {
         totalTime = endTime - startTime;
         System.out.println("Total execution time: " + totalTime/1000 + " s");
         
-        for (Map.Entry<String, String> entry : totalArticles.entrySet()) {
+        for (Map.Entry<String, String> entry : containsKeywordArticles.entrySet()) {
             System.out.println(entry.getKey() + " - Updated on: " + entry.getValue());
         }
-        System.out.println("Number of articles with weak or strong relationship found: " + totalArticles.size());
+        System.out.println("Number of articles conatining keyword: " + containsKeywordArticles.size());
+        
+        System.out.println("---------------------------------------------------------------------------------------");
+        
+        for (Map.Entry<String, String> entry : weakAndStrongRelationshipArticles.entrySet()) {
+            System.out.println(entry.getKey() + " - Updated on: " + entry.getValue());
+        }
+        System.out.println("Number of articles with weak or strong relationship found: " + weakAndStrongRelationshipArticles.size());
         
         System.out.println("---------------------------------------------------------------------------------------");
         
@@ -105,34 +112,38 @@ public class SeleniumCrawlerPoland {
                 String htmlContent = driver.getPageSource();
                 Document doc = Jsoup.parse(htmlContent);
 
-                Elements newsTitles = doc.select("ul li");
-                
-                for (Element title : newsTitles) {
-                    synchronized (totalArticles) {
-                    	String articleTitle = title.text();
-                    	// Print the title here
-                    	System.out.println("Title: " + articleTitle);
+                Elements newsItems = doc.select("ul li");
 
-                    	Element listItem = title.closest("div.title");
-                    	String articleDate = listItem.select("time").attr("datetime");
-                    	if (articleTitle.toLowerCase().contains(keyword) && (isStrongRelationship(articleTitle.toLowerCase()) || (isWeakRelationship(articleTitle.toLowerCase())))) {
-                    		totalArticles.put(articleTitle, articleDate);
-                    	} 
-                    	if (articleTitle.toLowerCase().contains(keyword) && isStrongRelationship(articleTitle.toLowerCase())) {
-                    		strongRelationshipArticles.put(articleTitle, articleDate);
-                    	} 
-                    	if (articleTitle.toLowerCase().contains(keyword) && isWeakRelationship(articleTitle.toLowerCase())) {
-                    		weakRelationshipArticles.put(articleTitle, articleDate);
-                    		
-                    	}
+                for (Element item : newsItems) {
+                    synchronized (weakAndStrongRelationshipArticles) {
+                        String articleTitle = item.select("h1").text();
+                        System.out.println(articleTitle);
+                        String articleDate = item.select("time").attr("datetime");
+                        handleResults(articleTitle, articleDate);
                     }
                 }
+                
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 driver.close();
             }
         });
+    }
+    
+    private void handleResults(String articleTitle, String articleDate) {
+    	if (articleTitle.toLowerCase().contains(keyword)) {
+    		containsKeywordArticles.put(articleTitle, articleDate);
+    	} 
+    	if (articleTitle.toLowerCase().contains(keyword) && (isStrongRelationship(articleTitle.toLowerCase()) || (isWeakRelationship(articleTitle.toLowerCase())))) {
+    		weakAndStrongRelationshipArticles.put(articleTitle, articleDate);
+    	} 
+    	if (articleTitle.toLowerCase().contains(keyword) && isStrongRelationship(articleTitle.toLowerCase())) {
+    		strongRelationshipArticles.put(articleTitle, articleDate);
+    	} 
+    	if (articleTitle.toLowerCase().contains(keyword) && isWeakRelationship(articleTitle.toLowerCase())) {
+    		weakRelationshipArticles.put(articleTitle, articleDate);
+    	}
     }
     
     private Boolean isStrongRelationship(String titleText) {
@@ -152,9 +163,13 @@ public class SeleniumCrawlerPoland {
     	}
 	    return false;
 	}
+	
+	public Map<String, String> getContainsKeywordArticles() {
+		return containsKeywordArticles;
+	}
     
-    public Map<String, String> getTotalArticles() {
-		return totalArticles;
+    public Map<String, String> getWeakAndStrongRelationshipArticles() {
+		return weakAndStrongRelationshipArticles;
 	}
 
 	public Map<String, String> getStrongRelationshipArticles() {
@@ -175,10 +190,14 @@ public class SeleniumCrawlerPoland {
     
     // comment out the code if you are connecting to gui
     public static void main(String[] args) {
-        SeleniumCrawlerPoland crawler = new SeleniumCrawlerPoland("https://www.gov.pl/web/diplomacy/news-", "climate", 100, 50);
+        //EUCrawler crawler = new EUCrawler("https://european-union.europa.eu/news-and-events/news-and-stories_en", "climate", 50, 50);
+    	SeleniumCrawlerPoland crawler = new SeleniumCrawlerPoland("https://www.gov.pl/web/diplomacy/news-", "climate", 50, 50);
         crawler.start();
     }
 }
+
+
+
 
 
 
