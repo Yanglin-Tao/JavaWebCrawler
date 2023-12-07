@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class SeleniumCrawler {
+public class SeleniumCrawlerPoland {
 
     private final String rootUrl;
     private final String keyword;
@@ -36,7 +36,7 @@ public class SeleniumCrawler {
     private long endTime;
     private long totalTime;
 
-	public SeleniumCrawler(String rootUrl, String keyword, int numThreads, int maxPages) {
+	public SeleniumCrawlerPoland(String rootUrl, String keyword, int numThreads, int maxPages) {
         this.rootUrl = rootUrl;
         this.keyword = keyword;
         this.executorService = Executors.newFixedThreadPool(numThreads);
@@ -105,8 +105,7 @@ public class SeleniumCrawler {
                 String htmlContent = driver.getPageSource();
                 Document doc = Jsoup.parse(htmlContent);
 
-//                Elements newsTitles = doc.select("div.ecl-content-item-block article.ecl-content-item"+ "");
-                Elements newsTitles = doc.select("ul.gem-c-document-list li.gem-c-document-list__item"+ "");
+                Elements newsTitles = doc.select("ul li");
                 
                 for (Element title : newsTitles) {
                     synchronized (totalArticles) {
@@ -114,7 +113,7 @@ public class SeleniumCrawler {
                     	// Print the title here
                     	System.out.println("Title: " + articleTitle);
 
-                    	Element listItem = title.closest("a.govuk-link");
+                    	Element listItem = title.closest("div.title");
                     	String articleDate = listItem.select("time").attr("datetime");
                     	if (articleTitle.toLowerCase().contains(keyword) && (isStrongRelationship(articleTitle.toLowerCase()) || (isWeakRelationship(articleTitle.toLowerCase())))) {
                     		totalArticles.put(articleTitle, articleDate);
@@ -176,7 +175,7 @@ public class SeleniumCrawler {
     
     // comment out the code if you are connecting to gui
     public static void main(String[] args) {
-        SeleniumCrawler crawler = new SeleniumCrawler("https://www.gov.uk/search/news-and-communications", "climate", 150, 300);
+        SeleniumCrawlerPoland crawler = new SeleniumCrawlerPoland("https://www.gov.pl/web/diplomacy/news-", "climate", 100, 50);
         crawler.start();
     }
 }
