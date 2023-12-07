@@ -112,12 +112,12 @@ public class SeleniumCrawler {
                 String htmlContent = driver.getPageSource();
                 Document doc = Jsoup.parse(htmlContent);
 
-                Elements newsTitles = doc.select("a[data-ga4-ecommerce-path^=/government/news/]");
-                for (Element title : newsTitles) {
+                Elements newsItems = doc.select("ul.gem-c-document-list li.gem-c-document-list__item");
+                for (Element item : newsItems) {
                     synchronized (weakAndStrongRelationshipArticles) {
-                    	String articleTitle = title.text();
-                    	Element listItem = title.closest("li.gem-c-document-list__item");
-                    	String articleDate = listItem.select("time").attr("datetime");
+                    	String articleTitle = item.select("a.govuk-link").text();
+                    	System.out.println(articleTitle);
+                    	String articleDate = item.select("time").attr("datetime");
                     	handleResults(articleTitle, articleDate);
                     }
                 }
