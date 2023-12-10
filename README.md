@@ -8,6 +8,11 @@ A multi-threaded Java web crawler project to extract data from government websit
 2. If prompted that “chromedriver” can’t be opened because Apple cannot check it for malicious software, go to System Settings > Security & Privacy, and you should see a message about chromedriver being blocked. In that case, click `Open Anyway` to force open the application.
 3. Run `which chromedriver` to verify its path. Copy and paste the path to SeleniumCrawler.
 
+### Database Setup
+1. Download postgresql and pgAdmin tool.
+2. Create a database named 'webCrawler_db', use password 'root'.
+3. Use Query tool and run queries in WebCrawlerDatabase.sql to initialize the database.
+
 ### Finding URLs to parse
 It's important to parse the correct base URL, use URLs like `https://www.gov.uk/search/news-and-communications` instead of generic ones for better results. 
 
