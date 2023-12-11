@@ -41,10 +41,10 @@ public class SeleniumCrawlerPortugal {
         this.keyword = keyword;
         this.executorService = Executors.newFixedThreadPool(numThreads);
         this.maxPages = maxPages;
-        strongRelationKeywordList.add("sécurité");
-        strongRelationKeywordList.add("la défense");
-        weakRelationKeywordList.add("changement");
-        weakRelationKeywordList.add("risque");
+        strongRelationKeywordList.add("security");
+        strongRelationKeywordList.add("defense");
+        weakRelationKeywordList.add("change");
+        weakRelationKeywordList.add("risk");
         
         System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
 
@@ -112,14 +112,15 @@ public class SeleniumCrawlerPortugal {
                 String htmlContent = driver.getPageSource();
                 Document doc = Jsoup.parse(htmlContent);
 
-                Elements newsItems = doc.select(".list-like-table.margin-bottom.col-xs-12.col-sm-9.search-list .col-sm-8.schxs.col-xs-12.hidden-lg.hidden-md");
-                
+                Elements newsItems = doc.select(".row .itemList");
+//                list-like-table.margin-bottom.col-xs-12.col-sm-9.search-list
 
                 for (Element item : newsItems) {
                     synchronized (weakAndStrongRelationshipArticles) {
-                        String articleTitle = item.select("a").text();
+                        String articleTitle = item.select("a.text").text();
+
 //                        System.out.println(articleTitle);
-                        String articleDate = item.select("div.dateItem").text()
+                        String articleDate = item.select(".dateItem").text()
 ;                        handleResults(articleTitle, articleDate);
                     }
                 }
@@ -191,7 +192,7 @@ public class SeleniumCrawlerPortugal {
     
     // comment out the code if you are connecting to gui
     public static void main(String[] args) {
-    	SeleniumCrawlerPortugal crawler = new SeleniumCrawlerPortugal("https://www.portugal.gov.pt/en/gc23/communication/news", "climat", 50, 50);
+    	SeleniumCrawlerPortugal crawler = new SeleniumCrawlerPortugal("https://www.portugal.gov.pt/en/gc23/communication/news", "climate", 50, 100);
         crawler.start();
     }
 }
