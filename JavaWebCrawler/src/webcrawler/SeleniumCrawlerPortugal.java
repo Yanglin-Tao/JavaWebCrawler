@@ -117,7 +117,7 @@ public class SeleniumCrawlerPortugal {
 
                 for (Element item : newsItems) {
                     synchronized (weakAndStrongRelationshipArticles) {
-                        String articleTitle = item.select("a.text").text();
+                        String articleTitle = item.select(".gov-texts-list").text();
 
 //                        System.out.println(articleTitle);
                         String articleDate = item.select(".dateItem").text()
@@ -192,7 +192,7 @@ public class SeleniumCrawlerPortugal {
     
     // comment out the code if you are connecting to gui
     public static void main(String[] args) {
-    	SeleniumCrawlerPortugal crawler = new SeleniumCrawlerPortugal("https://www.portugal.gov.pt/en/gc23/communication/news", "climate", 50, 100);
+    	SeleniumCrawlerPortugal crawler = new SeleniumCrawlerPortugal("https://www.portugal.gov.pt/en/gc23/communication/news", "climate", 100, 174);
         crawler.start();
     }
 }

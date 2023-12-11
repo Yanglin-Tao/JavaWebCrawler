@@ -112,12 +112,12 @@ public class SeleniumCrawlerPoland {
                 String htmlContent = driver.getPageSource();
                 Document doc = Jsoup.parse(htmlContent);
 
-                Elements newsItems = doc.select("ul li");
+                Elements newsItems = doc.select(".art-prev.art-prev--near-menu li");
 
                 for (Element item : newsItems) {
                     synchronized (weakAndStrongRelationshipArticles) {
-                        String articleTitle = item.select("div.title").text();
-                        System.out.println(articleTitle);
+                        String articleTitle = item.select("intro").text();
+//                        System.out.println(articleTitle);
                         String articleDate = item.select("span.date").text();
                         handleResults(articleTitle, articleDate);
                     } 
@@ -191,7 +191,7 @@ public class SeleniumCrawlerPoland {
     // comment out the code if you are connecting to gui
     public static void main(String[] args) {
         //EUCrawler crawler = new EUCrawler("https://european-union.europa.eu/news-and-events/news-and-stories_en", "climate", 50, 50);
-    	SeleniumCrawlerPoland crawler = new SeleniumCrawlerPoland("https://www.gov.pl/web/diplomacy/news-", "climate", 100, 150);
+    	SeleniumCrawlerPoland crawler = new SeleniumCrawlerPoland("https://www.gov.pl/web/diplomacy/news-", "climate", 10, 10);
         crawler.start();
     }
 }
