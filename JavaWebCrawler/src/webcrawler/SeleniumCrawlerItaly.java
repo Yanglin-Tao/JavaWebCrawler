@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class SeleniumCrawlerEU {
+public class SeleniumCrawlerItaly {
 
     private final String rootUrl;
     private final String keyword;
@@ -36,7 +36,7 @@ public class SeleniumCrawlerEU {
     private long endTime;
     private long totalTime;
 
-	public SeleniumCrawlerEU(String rootUrl, String keyword, int numThreads, int maxPages) {
+	public SeleniumCrawlerItaly(String rootUrl, String keyword, int numThreads, int maxPages) {
         this.rootUrl = rootUrl;
         this.keyword = keyword;
         this.executorService = Executors.newFixedThreadPool(numThreads);
@@ -112,13 +112,13 @@ public class SeleniumCrawlerEU {
                 String htmlContent = driver.getPageSource();
                 Document doc = Jsoup.parse(htmlContent);
 
-                Elements newsItems = doc.select(".ecl-content-item-block .ecl-content-item");
+                Elements newsItems = doc.select(".view-content .box_text.box_text_small.clearfix");
 
                 for (Element item : newsItems) {
                     synchronized (weakAndStrongRelationshipArticles) {
-                        String articleTitle = item.select("h1").text();
+                        String articleTitle = item.select("h2.h4").text();
                         System.out.println(articleTitle);
-                        String articleDate = item.select("time").attr("datetime");
+                        String articleDate = item.select(".h6.clearfix.dataleft").text();
                         handleResults(articleTitle, articleDate);
                     }
                 }
@@ -191,7 +191,7 @@ public class SeleniumCrawlerEU {
     // comment out the code if you are connecting to gui
     public static void main(String[] args) {
         //EUCrawler crawler = new EUCrawler("https://european-union.europa.eu/news-and-events/news-and-stories_en", "climate", 50, 50);
-    	SeleniumCrawlerEU crawler = new SeleniumCrawlerEU("https://european-union.europa.eu/news-and-events/news-and-stories_en", "climate", 50, 50);
+    	SeleniumCrawlerItaly crawler = new SeleniumCrawlerItaly("https://www.governo.it/en/notizie-chigi-en", "climate", 50, 50);
         crawler.start();
     }
 }

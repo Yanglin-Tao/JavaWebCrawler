@@ -72,7 +72,7 @@ public class SeleniumCrawlerPoland {
         for (Map.Entry<String, String> entry : containsKeywordArticles.entrySet()) {
             System.out.println(entry.getKey() + " - Updated on: " + entry.getValue());
         }
-        System.out.println("Number of articles conatining keyword: " + containsKeywordArticles.size());
+        System.out.println("Number of articles containing keyword: " + containsKeywordArticles.size());
         
         System.out.println("---------------------------------------------------------------------------------------");
         
@@ -116,11 +116,11 @@ public class SeleniumCrawlerPoland {
 
                 for (Element item : newsItems) {
                     synchronized (weakAndStrongRelationshipArticles) {
-                        String articleTitle = item.select("h1").text();
+                        String articleTitle = item.select("div.title").text();
                         System.out.println(articleTitle);
-                        String articleDate = item.select("time").attr("datetime");
+                        String articleDate = item.select("span.date").text();
                         handleResults(articleTitle, articleDate);
-                    }
+                    } 
                 }
                 
             } catch (Exception e) {
@@ -191,7 +191,7 @@ public class SeleniumCrawlerPoland {
     // comment out the code if you are connecting to gui
     public static void main(String[] args) {
         //EUCrawler crawler = new EUCrawler("https://european-union.europa.eu/news-and-events/news-and-stories_en", "climate", 50, 50);
-    	SeleniumCrawlerPoland crawler = new SeleniumCrawlerPoland("https://www.gov.pl/web/diplomacy/news-", "climate", 50, 50);
+    	SeleniumCrawlerPoland crawler = new SeleniumCrawlerPoland("https://www.gov.pl/web/diplomacy/news-", "climate", 100, 150);
         crawler.start();
     }
 }

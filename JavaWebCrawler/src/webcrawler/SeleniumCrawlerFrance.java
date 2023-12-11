@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class SeleniumCrawlerEU {
+public class SeleniumCrawlerFrance {
 
     private final String rootUrl;
     private final String keyword;
@@ -36,15 +36,15 @@ public class SeleniumCrawlerEU {
     private long endTime;
     private long totalTime;
 
-	public SeleniumCrawlerEU(String rootUrl, String keyword, int numThreads, int maxPages) {
+	public SeleniumCrawlerFrance(String rootUrl, String keyword, int numThreads, int maxPages) {
         this.rootUrl = rootUrl;
         this.keyword = keyword;
         this.executorService = Executors.newFixedThreadPool(numThreads);
         this.maxPages = maxPages;
-        strongRelationKeywordList.add("security");
-        strongRelationKeywordList.add("defense");
-        weakRelationKeywordList.add("change");
-        weakRelationKeywordList.add("risk");
+        strongRelationKeywordList.add("sécurité");
+        strongRelationKeywordList.add("la défense");
+        weakRelationKeywordList.add("changement");
+        weakRelationKeywordList.add("risque");
         
         System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
 
@@ -72,7 +72,7 @@ public class SeleniumCrawlerEU {
         for (Map.Entry<String, String> entry : containsKeywordArticles.entrySet()) {
             System.out.println(entry.getKey() + " - Updated on: " + entry.getValue());
         }
-        System.out.println("Number of articles conatining keyword: " + containsKeywordArticles.size());
+        System.out.println("Number of articles containing keyword: " + containsKeywordArticles.size());
         
         System.out.println("---------------------------------------------------------------------------------------");
         
@@ -112,11 +112,13 @@ public class SeleniumCrawlerEU {
                 String htmlContent = driver.getPageSource();
                 Document doc = Jsoup.parse(htmlContent);
 
-                Elements newsItems = doc.select(".ecl-content-item-block .ecl-content-item");
+                Elements newsItems = doc.select(".fr-grid-row.fr-grid-row--gutters.list.fr-my-0 .fr-card.fr-enlarge-link.fr-card--horizontal.fr-card--sm");
+               
+//                Elements newsItems = doc.select(".fr-grid-row.fr-grid-row--gutters.list.fr-my-0 .tile.fr-col-12.fr-py-0.fr-mb-3w");
 
                 for (Element item : newsItems) {
                     synchronized (weakAndStrongRelationshipArticles) {
-                        String articleTitle = item.select("h1").text();
+                        String articleTitle = item.select("h4").text();
                         System.out.println(articleTitle);
                         String articleDate = item.select("time").attr("datetime");
                         handleResults(articleTitle, articleDate);
@@ -190,10 +192,18 @@ public class SeleniumCrawlerEU {
     
     // comment out the code if you are connecting to gui
     public static void main(String[] args) {
-        //EUCrawler crawler = new EUCrawler("https://european-union.europa.eu/news-and-events/news-and-stories_en", "climate", 50, 50);
-    	SeleniumCrawlerEU crawler = new SeleniumCrawlerEU("https://european-union.europa.eu/news-and-events/news-and-stories_en", "climate", 50, 50);
+    	SeleniumCrawlerFrance crawler = new SeleniumCrawlerFrance("https://www.gouvernement.fr/toute-l-actualite", "climat", 150, 200);
         crawler.start();
     }
 }
+
+
+
+
+
+
+
+
+
 
 
