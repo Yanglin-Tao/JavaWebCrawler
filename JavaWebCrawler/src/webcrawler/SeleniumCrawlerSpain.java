@@ -191,7 +191,7 @@ public class SeleniumCrawlerSpain {
     // comment out the code if you are connecting to gui
     public static void main(String[] args) {
         //EUCrawler crawler = new EUCrawler("https://european-union.europa.eu/news-and-events/news-and-stories_en", "climate", 50, 50);
-    	SeleniumCrawlerSpain crawler = new SeleniumCrawlerSpain("https://www.lamoncloa.gob.es/lang/en/gobierno/news/Paginas/index.aspx", "climate", 50, 50);
+    	SeleniumCrawlerSpain crawler = new SeleniumCrawlerSpain("https://www.lamoncloa.gob.es/lang/en/gobierno/news/Paginas/index.aspx", "climate", 10, 10);
         crawler.start();
     }
 }
