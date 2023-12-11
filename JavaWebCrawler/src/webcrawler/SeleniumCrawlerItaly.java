@@ -112,14 +112,14 @@ public class SeleniumCrawlerItaly {
                 String htmlContent = driver.getPageSource();
                 Document doc = Jsoup.parse(htmlContent);
 
-                Elements newsItems = doc.select(".view-content .box_text.box_text_small.clearfix");
+                Elements newsItems = doc.select(".row.half_base .box_text.box_text_small.clearfix");
 
                 for (Element item : newsItems) {
                     synchronized (weakAndStrongRelationshipArticles) {
-                        String articleTitle = item.select("h2.h4").text();
-                        System.out.println(articleTitle);
-                        String articleDate = item.select(".h6.clearfix.dataleft").text();
-                        handleResults(articleTitle, articleDate);
+                        String articleTitle = item.select("p").text();
+//                        System.out.println(articleTitle);
+                        String articleDate = item.select("div.h6.clearfix.dataleft").text();
+                        handleResults(item,articleTitle, articleDate);
                     }
                 }
                 
@@ -131,19 +131,27 @@ public class SeleniumCrawlerItaly {
         });
     }
     
-    private void handleResults(String articleTitle, String articleDate) {
+    private void handleResults(Element item, String articleTitle, String articleDate) {
     	if (articleTitle.toLowerCase().contains(keyword)) {
-    		containsKeywordArticles.put(articleTitle, articleDate);
+    		String updatedArticleTitle = item.select("h2, h4").text();
+
+    		containsKeywordArticles.put(updatedArticleTitle, articleDate);
     	} 
     	if (articleTitle.toLowerCase().contains(keyword) && (isStrongRelationship(articleTitle.toLowerCase()) || (isWeakRelationship(articleTitle.toLowerCase())))) {
-    		weakAndStrongRelationshipArticles.put(articleTitle, articleDate);
+    		String updatedArticleTitle = item.select("h2, h4").text();
+
+    		weakAndStrongRelationshipArticles.put(updatedArticleTitle, articleDate);
     	} 
     	if (articleTitle.toLowerCase().contains(keyword) && isStrongRelationship(articleTitle.toLowerCase())) {
-    		strongRelationshipArticles.put(articleTitle, articleDate);
-    	} 
-    	if (articleTitle.toLowerCase().contains(keyword) && isWeakRelationship(articleTitle.toLowerCase())) {
-    		weakRelationshipArticles.put(articleTitle, articleDate);
-    	}
+            // Update the selector here to target "h2" and "h4" tags
+            String updatedArticleTitle = item.select("h2, h4").text();
+            strongRelationshipArticles.put(updatedArticleTitle, articleDate);
+        } 
+        if (articleTitle.toLowerCase().contains(keyword) && isWeakRelationship(articleTitle.toLowerCase())) {
+            // Update the selector here to target "h2" and "h4" tags
+            String updatedArticleTitle = item.select("h2, h4").text();
+            weakRelationshipArticles.put(updatedArticleTitle, articleDate);
+        }
     }
     
     private Boolean isStrongRelationship(String titleText) {
@@ -191,7 +199,7 @@ public class SeleniumCrawlerItaly {
     // comment out the code if you are connecting to gui
     public static void main(String[] args) {
         //EUCrawler crawler = new EUCrawler("https://european-union.europa.eu/news-and-events/news-and-stories_en", "climate", 50, 50);
-    	SeleniumCrawlerItaly crawler = new SeleniumCrawlerItaly("https://www.governo.it/en/notizie-chigi-en", "climate", 50, 50);
+    	SeleniumCrawlerItaly crawler = new SeleniumCrawlerItaly("https://www.governo.it/en/notizie-chigi-en", "climate", 100, 150);
         crawler.start();
     }
 }
