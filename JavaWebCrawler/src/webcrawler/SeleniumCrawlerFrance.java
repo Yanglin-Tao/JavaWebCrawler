@@ -46,7 +46,8 @@ public class SeleniumCrawlerFrance {
         weakRelationKeywordList.add("changement");
         weakRelationKeywordList.add("risque");
         
-        System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
+        // System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "/opt/homebrew/bin/chromedriver");
 
     }
 
@@ -113,8 +114,6 @@ public class SeleniumCrawlerFrance {
                 Document doc = Jsoup.parse(htmlContent);
 
                 Elements newsItems = doc.select(".fr-grid-row.fr-grid-row--gutters.list.fr-my-0 .fr-card.fr-enlarge-link.fr-card--horizontal.fr-card--sm");
-               
-//                Elements newsItems = doc.select(".fr-grid-row.fr-grid-row--gutters.list.fr-my-0 .tile.fr-col-12.fr-py-0.fr-mb-3w");
 
                 for (Element item : newsItems) {
                     synchronized (weakAndStrongRelationshipArticles) {

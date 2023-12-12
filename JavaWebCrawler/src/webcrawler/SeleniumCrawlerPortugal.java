@@ -46,7 +46,8 @@ public class SeleniumCrawlerPortugal {
         weakRelationKeywordList.add("change");
         weakRelationKeywordList.add("risk");
         
-        System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
+        // System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "/opt/homebrew/bin/chromedriver");
 
     }
 
@@ -113,13 +114,11 @@ public class SeleniumCrawlerPortugal {
                 Document doc = Jsoup.parse(htmlContent);
 
                 Elements newsItems = doc.select(".row .itemList");
-//                list-like-table.margin-bottom.col-xs-12.col-sm-9.search-list
 
                 for (Element item : newsItems) {
                     synchronized (weakAndStrongRelationshipArticles) {
                         String articleTitle = item.select(".gov-texts-list").text();
 
-//                        System.out.println(articleTitle);
                         String articleDate = item.select(".dateItem").text()
 ;                        handleResults(articleTitle, articleDate);
                     }

@@ -17,6 +17,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+// Parsing through the paragraph part of each article as titles don't contain the keyword
+
 public class SeleniumCrawlerItaly {
 
     private final String rootUrl;
@@ -46,7 +48,8 @@ public class SeleniumCrawlerItaly {
         weakRelationKeywordList.add("change");
         weakRelationKeywordList.add("risk");
         
-        System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
+        // System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "/opt/homebrew/bin/chromedriver");
 
     }
 
@@ -117,7 +120,6 @@ public class SeleniumCrawlerItaly {
                 for (Element item : newsItems) {
                     synchronized (weakAndStrongRelationshipArticles) {
                         String articleTitle = item.select("p").text();
-//                        System.out.println(articleTitle);
                         String articleDate = item.select("div.h6.clearfix.dataleft").text();
                         handleResults(item,articleTitle, articleDate);
                     }

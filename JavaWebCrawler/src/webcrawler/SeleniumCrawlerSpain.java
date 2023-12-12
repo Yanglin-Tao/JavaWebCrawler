@@ -17,6 +17,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+// Site unreachable
+
 public class SeleniumCrawlerSpain {
 
     private final String rootUrl;
@@ -46,7 +48,8 @@ public class SeleniumCrawlerSpain {
         weakRelationKeywordList.add("change");
         weakRelationKeywordList.add("risk");
         
-        System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
+        // System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "/opt/homebrew/bin/chromedriver");
 
     }
 
@@ -117,7 +120,6 @@ public class SeleniumCrawlerSpain {
                 for (Element item : newsItems) {
                     synchronized (weakAndStrongRelationshipArticles) {
                         String articleTitle = item.select("a").text();
-//                        System.out.println(articleTitle);
                         String articleDate = item.select("span.date").text();
                         handleResults(articleTitle, articleDate);
                     }
@@ -190,7 +192,6 @@ public class SeleniumCrawlerSpain {
     
     // comment out the code if you are connecting to gui
     public static void main(String[] args) {
-        //EUCrawler crawler = new EUCrawler("https://european-union.europa.eu/news-and-events/news-and-stories_en", "climate", 50, 50);
     	SeleniumCrawlerSpain crawler = new SeleniumCrawlerSpain("https://www.lamoncloa.gob.es/lang/en/gobierno/news/Paginas/index.aspx", "climate", 10, 10);
         crawler.start();
     }
