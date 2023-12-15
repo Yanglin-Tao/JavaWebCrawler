@@ -1,5 +1,8 @@
 package webcrawler;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -46,8 +49,8 @@ public class SeleniumCrawlerPortugal {
         weakRelationKeywordList.add("change");
         weakRelationKeywordList.add("risk");
         
-        // System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
-        System.setProperty("webdriver.chrome.driver", "/opt/homebrew/bin/chromedriver");
+        System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
+        // System.setProperty("webdriver.chrome.driver", "/opt/homebrew/bin/chromedriver");
 
     }
 
@@ -120,7 +123,7 @@ public class SeleniumCrawlerPortugal {
                         String articleTitle = item.select(".gov-texts-list").text();
 
                         String articleDate = item.select(".dateItem").text()
-;                        handleResults(articleTitle, articleDate);
+;                        handleResults(item, articleTitle, articleDate);
                     }
                 }
                 
@@ -132,19 +135,38 @@ public class SeleniumCrawlerPortugal {
         });
     }
     
-    private void handleResults(String articleTitle, String articleDate) {
-    	if (articleTitle.toLowerCase().contains(keyword)) {
-    		containsKeywordArticles.put(articleTitle, articleDate);
-    	} 
-    	if (articleTitle.toLowerCase().contains(keyword) && (isStrongRelationship(articleTitle.toLowerCase()) || (isWeakRelationship(articleTitle.toLowerCase())))) {
-    		weakAndStrongRelationshipArticles.put(articleTitle, articleDate);
-    	} 
-    	if (articleTitle.toLowerCase().contains(keyword) && isStrongRelationship(articleTitle.toLowerCase())) {
-    		strongRelationshipArticles.put(articleTitle, articleDate);
-    	} 
-    	if (articleTitle.toLowerCase().contains(keyword) && isWeakRelationship(articleTitle.toLowerCase())) {
-    		weakRelationshipArticles.put(articleTitle, articleDate);
-    	}
+    private void handleResults(Element item, String articleTitle, String articleDate) {
+        SimpleDateFormat originalDateFormat = new SimpleDateFormat("YYYY-MM-DD 'at' HH'h'mm");
+        SimpleDateFormat outputDateFormat = new SimpleDateFormat("MM-DD-YYYY"); // or "dd-MM-yyyy"
+
+        try {
+            Date parsedDate = originalDateFormat.parse(articleDate);
+            String formattedDate = outputDateFormat.format(parsedDate);
+
+            if (articleTitle.toLowerCase().contains(keyword)) {
+                String updatedArticleTitle = item.select("a.text:not(:has(*))").text();
+                containsKeywordArticles.put(updatedArticleTitle, formattedDate);
+            }
+
+            if (articleTitle.toLowerCase().contains(keyword) && (isStrongRelationship(articleTitle.toLowerCase()) || (isWeakRelationship(articleTitle.toLowerCase())))) {
+                String updatedArticleTitle = item.select("a.text:not(:has(*))").text();
+                weakAndStrongRelationshipArticles.put(updatedArticleTitle, formattedDate);
+            }
+
+            if (articleTitle.toLowerCase().contains(keyword) && isStrongRelationship(articleTitle.toLowerCase())) {
+                String updatedArticleTitle = item.select("a.text:not(:has(*))").text();
+                strongRelationshipArticles.put(updatedArticleTitle, formattedDate);
+            }
+
+            if (articleTitle.toLowerCase().contains(keyword) && isWeakRelationship(articleTitle.toLowerCase())) {
+                String updatedArticleTitle = item.select("a.text:not(:has(*))").text();
+                weakRelationshipArticles.put(updatedArticleTitle, formattedDate);
+            }
+
+        } catch (ParseException e) {
+            // Handle parsing exception if needed
+            e.printStackTrace();
+        }
     }
     
     private Boolean isStrongRelationship(String titleText) {
@@ -185,7 +207,7 @@ public class SeleniumCrawlerPortugal {
 		return totalTime;
 	}
     
-    public int getMaxPages() {
+    public int get() {
 		return maxPages;
 	}
     

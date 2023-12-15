@@ -5,6 +5,7 @@ CREATE TABLE Country (
     root_URL VARCHAR(255),
     list_items_selector VARCHAR(255),
     news_title_selector VARCHAR(255),
+    news_teaser_selector VARCHAR(255),
     metadata_selector VARCHAR(255),
     date_format VARCHAR(255),
     number_of_threads INT
@@ -204,4 +205,68 @@ INSERT INTO Country (
     'datetime', 
     'YYYY-MM-DD', 
     50
+);
+
+INSERT INTO Country (
+    id,
+    country_name,
+    root_URL,
+    list_items_selector,
+    news_title_selector,
+    metadata_selector,
+    date_format,
+    number_of_threads
+) VALUES (
+    6,
+    'France',
+    'https://www.gouvernement.fr/toute-l-actualite',
+    '.fr-grid-row.fr-grid-row--gutters.list.fr-my-0 .fr-card.fr-enlarge-link.fr-card--horizontal.fr-card--sm',
+    'h4', 
+    'p.fr-card__detail', 
+    'DD-MM-YYYY', 
+    150
+);
+
+INSERT INTO Country (
+    id,
+    country_name,
+    root_URL,
+    list_items_selector,
+    news_title_selector,
+    news_teaser_selector,
+    metadata_selector,
+    date_format,
+    number_of_threads
+) VALUES (
+    7,
+    'Italy',
+    'https://www.governo.it/en/notizie-chigi-en',
+    '.row.half_base .box_text.box_text_small.clearfix',
+    'p', 
+    'h2.h4',
+    'div.h6.clearfix.dataleft', 
+    'DD Month YYYY', 
+    100
+);
+
+INSERT INTO Country (
+    id,
+    country_name,
+    root_URL,
+    list_items_selector,
+    news_title_selector,
+    news_teaser_selector,
+    metadata_selector,
+    date_format,
+    number_of_threads
+) VALUES (
+    8,
+    'Portugal',
+    'https://www.portugal.gov.pt/en/gc23/communication/news',
+    '.row .itemList',
+    '.gov-texts-list', 
+    'a.text:not(:has(*))',
+    '.dateItem', 
+    'MM-DD-YYYY', 
+    100
 );

@@ -48,8 +48,8 @@ public class SeleniumCrawlerPoland {
         weakRelationKeywordList.add("change");
         weakRelationKeywordList.add("risk");
         
-        // System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
-        System.setProperty("webdriver.chrome.driver", "/opt/homebrew/bin/chromedriver");
+        System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
+        // System.setProperty("webdriver.chrome.driver", "/opt/homebrew/bin/chromedriver");
 
     }
 

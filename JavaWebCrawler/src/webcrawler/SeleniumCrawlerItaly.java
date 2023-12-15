@@ -48,8 +48,8 @@ public class SeleniumCrawlerItaly {
         weakRelationKeywordList.add("change");
         weakRelationKeywordList.add("risk");
         
-        // System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
-        System.setProperty("webdriver.chrome.driver", "/opt/homebrew/bin/chromedriver");
+         System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
+        // System.setProperty("webdriver.chrome.driver", "/opt/homebrew/bin/chromedriver");
 
     }
 
@@ -135,23 +135,23 @@ public class SeleniumCrawlerItaly {
     
     private void handleResults(Element item, String articleTitle, String articleDate) {
     	if (articleTitle.toLowerCase().contains(keyword)) {
-    		String updatedArticleTitle = item.select("h2, h4").text();
+    		String updatedArticleTitle = item.select("h2.h4").text();
 
     		containsKeywordArticles.put(updatedArticleTitle, articleDate);
     	} 
     	if (articleTitle.toLowerCase().contains(keyword) && (isStrongRelationship(articleTitle.toLowerCase()) || (isWeakRelationship(articleTitle.toLowerCase())))) {
-    		String updatedArticleTitle = item.select("h2, h4").text();
+    		String updatedArticleTitle = item.select("h2.h4").text();
 
     		weakAndStrongRelationshipArticles.put(updatedArticleTitle, articleDate);
     	} 
     	if (articleTitle.toLowerCase().contains(keyword) && isStrongRelationship(articleTitle.toLowerCase())) {
             // Update the selector here to target "h2" and "h4" tags
-            String updatedArticleTitle = item.select("h2, h4").text();
+            String updatedArticleTitle = item.select("h2.h4").text();
             strongRelationshipArticles.put(updatedArticleTitle, articleDate);
         } 
         if (articleTitle.toLowerCase().contains(keyword) && isWeakRelationship(articleTitle.toLowerCase())) {
             // Update the selector here to target "h2" and "h4" tags
-            String updatedArticleTitle = item.select("h2, h4").text();
+            String updatedArticleTitle = item.select("h2.h4").text();
             weakRelationshipArticles.put(updatedArticleTitle, articleDate);
         }
     }

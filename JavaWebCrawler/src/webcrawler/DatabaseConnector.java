@@ -22,7 +22,7 @@ public class DatabaseConnector {
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
             // Handle the exception based on your project's requirements
-            return null;
+            throw new RuntimeException("Failed to connect to the database.", e);
         }
     }
 
@@ -34,25 +34,32 @@ public class DatabaseConnector {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Failed to close the database connection.", e);
+
             // Handle the exception based on your project's requirements
         }
     }
 
-    // This is the entry point of the program
+ // This is the entry point of the program
     public static void main(String[] args) {
-        // Example of using the database connection
-        Connection connection = connect();
+        try {
+            // Example of using the database connection
+            Connection connection = connect();
 
-        if (connection != null) {
-            System.out.println("Connected to the database!");
+            if (connection != null) {
+                System.out.println("Connected to the database!");
 
-            // Perform any testing or initialization tasks using the connection here
+                // Perform any testing or initialization tasks using the connection here
 
-            // Close the connection when done
-            close(connection);
-            System.out.println("Connection closed.");
-        } else {
-            System.out.println("Failed to connect to the database.");
+                // Close the connection when done
+                close(connection);
+                System.out.println("Connection closed.");
+            } else {
+                System.out.println("Failed to connect to the database.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Handle the exception based on your project's requirements
         }
     }
 }

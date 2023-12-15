@@ -94,7 +94,7 @@ public class SeleniumCrawlerFrance {
         for (Map.Entry<String, String> entry : weakRelationshipArticles.entrySet()) {
             System.out.println(entry.getKey() + " - Updated on: " + entry.getValue());
         }
-        System.out.println("Number of articles with weak relationship found: " + weakRelationshipArticles.size());
+        System.out.println("Number of articles with weak rela12wsXXXtionship found: " + weakRelationshipArticles.size());
         
         System.out.println("---------------------------------------------------------------------------------------");
     }
@@ -119,7 +119,7 @@ public class SeleniumCrawlerFrance {
                     synchronized (weakAndStrongRelationshipArticles) {
                         String articleTitle = item.select("h4").text();
                         System.out.println(articleTitle);
-                        String articleDate = item.select("time").attr("datetime");
+                        String articleDate = item.select("p.fr-card__detail").text();
                         handleResults(articleTitle, articleDate);
                     }
                 }
