@@ -8,9 +8,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -120,6 +123,15 @@ public class SeleniumCrawlerFrance {
                         String articleTitle = item.select("h4").text();
                         System.out.println(articleTitle);
                         String articleDate = item.select("p.fr-card__detail").text();
+                        if (!articleDate.isEmpty()) {
+                            // Parse the date from "Publié 15/12/2023" format
+                            SimpleDateFormat inputFormat = new SimpleDateFormat("'Publié' MM/DD/YYYY", Locale.FRENCH);
+                            Date date = inputFormat.parse(articleDate);
+
+                            // Format the date as "MM-dd-yyyy"
+                            SimpleDateFormat outputFormat = new SimpleDateFormat("MM-DD-YYYY");
+                            articleDate = outputFormat.format(date);
+                    	}
                         handleResults(articleTitle, articleDate);
                     }
                 }

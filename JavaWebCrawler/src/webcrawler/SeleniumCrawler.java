@@ -10,6 +10,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.util.HashSet;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,17 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.sql.PreparedStatement;
+import java.util.Locale;
+import java.sql.ResultSet;
+import java.text.ParseException;
+
+
+
+
 
 public class SeleniumCrawler {
 
@@ -74,81 +86,24 @@ public class SeleniumCrawler {
         totalTime = endTime - startTime;
         System.out.println("Total execution time: " + totalTime / 1000 + " s");
 
-        printResults(containsKeywordArticles, "Number of articles containing keyword");
-        System.out.println("---------------------------------------------------------------------------------------");
-
-        printResults(weakAndStrongRelationshipArticles, "Number of articles with weak or strong relationship found");
-        System.out.println("---------------------------------------------------------------------------------------");
-
-        printResults(strongRelationshipArticles, "Number of articles with strong relationship found");
-        System.out.println("---------------------------------------------------------------------------------------");
-
-        printResults(weakRelationshipArticles, "Number of articles with weak relationship found");
-        System.out.println("---------------------------------------------------------------------------------------");
+//        printResults(containsKeywordArticles, "Number of articles containing keyword");
+//        System.out.println("---------------------------------------------------------------------------------------");
+//
+//        printResults(weakAndStrongRelationshipArticles, "Number of articles with weak or strong relationship found");
+//        System.out.println("---------------------------------------------------------------------------------------");
+//
+//        printResults(strongRelationshipArticles, "Number of articles with strong relationship found");
+//        System.out.println("---------------------------------------------------------------------------------------");
+//
+//        printResults(weakRelationshipArticles, "Number of articles with weak relationship found");
+//        System.out.println("---------------------------------------------------------------------------------------");
     }
 
-    private void printResults(Map<String, String> resultMap, String message) {
-        for (Map.Entry<String, String> entry : resultMap.entrySet()) {
-            System.out.println(entry.getKey() + " - Updated on: " + entry.getValue());
-        }
-        System.out.println(message + ": " + resultMap.size());
-    }
-
-//    private void crawl(String url) {
-//        if (visitedUrls.contains(url)) {
-//            return;
+//    private void printResults(Map<String, String> resultMap, String message) {
+//        for (Map.Entry<String, String> entry : resultMap.entrySet()) {
+//            System.out.println(entry.getKey() + " - Updated on: " + entry.getValue());
 //        }
-//        visitedUrls.add(url);
-//        executorService.submit(() -> {
-//            ChromeOptions options = new ChromeOptions();
-//            options.addArguments("--headless");
-//            WebDriver driver = new ChromeDriver(options);
-//            try {
-//                driver.get(url);
-//                String htmlContent = driver.getPageSource();
-//                Document doc = Jsoup.parse(htmlContent);
-//
-//                Elements newsItems = doc.select(countryConfig.getListItemsSelector());
-//
-//                for (Element item : newsItems) {
-//                    synchronized (weakAndStrongRelationshipArticles) {
-//                        String articleTitle = item.select(countryConfig.getNewsTitleSelector()).text();
-//                        String articleDate;
-//
-//                        // Fetch metadata selector dynamically from the database
-//                        String metadataSelector = countryConfig.getMetadataSelector();
-//                        
-//                        // Check the country and select the appropriate date selector
-//                        if (countryConfig.getCountryName().equals("Portugal") || countryConfig.getCountryName().equals("Italy") || countryConfig.getCountryName().equals("France") ) {
-//                            articleDate = item.select(countryConfig.getMetadataSelector()).text();
-//                        
-//                        } else if (countryConfig.getCountryName().equals("Belgium") || countryConfig.getCountryName().equals("Germany") || countryConfig.getCountryName().equals("EU") || countryConfig.getCountryName().equals("UK")){
-//                            articleDate = item.select(countryConfig.getMetadataSelector()).attr("datetime");
-//                        } else if (countryConfig.getCountryName().equals("Netherland")) {
-//                        	String metaData = item.select(countryConfig.getMetadataSelector()).text();
-//                            String[] parts = metaData.split(" \\| ");
-//                        	if (parts.length > 1) {
-//                            	String[] dateParts = parts[1].split("[–-]");
-//                            	if (dateParts.length == 3) {
-//                                    articleDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
-//                                } else {
-//                                	articleDate = "Date cannot be formated";
-//                                }
-//                            } else {
-//                            	articleDate = "Date not found";
-//                            }
-//                        }
-//
-//                        handleResults(item, articleTitle, articleDate);
-//                    }
-//                }
-//
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            } finally {
-//                driver.close();
-//            }
-//        });
+//        System.out.println(message + ": " + resultMap.size());
 //    }
 
     private void crawl(String url) {
@@ -176,11 +131,44 @@ public class SeleniumCrawler {
                         String metadataSelector = countryConfig.getMetadataSelector();
 
                         // Check the country and select the appropriate date selector
-                        if (countryConfig.getCountryName().equals("Portugal") || countryConfig.getCountryName().equals("Italy") || countryConfig.getCountryName().equals("France")) {
+                        if (countryConfig.getCountryName().equals("Italy")) { 
                             articleDate = item.select(metadataSelector).text();
+                            
+                         // Assuming articleDate is in "15 December 2023" format
+                            SimpleDateFormat inputFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.ENGLISH);
+                            Date parsedDate = inputFormat.parse(articleDate);
+
+                            // Convert the date to "MM-dd-yyyy" format
+                            SimpleDateFormat outputFormat = new SimpleDateFormat("MM-dd-yyyy");
+                            articleDate  = outputFormat.format(parsedDate);
+
+                            
+                        } else if (countryConfig.getCountryName().equals("Portugal")) {
+                        	articleDate = item.select(metadataSelector).text();
+                        	// Convert the date format
+                            SimpleDateFormat inputFormat = new SimpleDateFormat("YYYY-MM-DD 'at' HH'h'mm");
+                            Date date = inputFormat.parse(articleDate);
+
+                            SimpleDateFormat outputFormat = new SimpleDateFormat("MM-DD-YYYY");
+                            articleDate = outputFormat.format(date);
+                            
+                      
+                        } else if (countryConfig.getCountryName().equals("France")) {
+                        	articleDate = item.select(metadataSelector).text();
+                        	
+                        	if (!articleDate.isEmpty()) {
+                                // Parse the date from "Publié 15/12/2023" format
+                                SimpleDateFormat inputFormat = new SimpleDateFormat("'Publié' MM/DD/YYYY", Locale.FRENCH);
+                                Date date = inputFormat.parse(articleDate);
+
+                                // Format the date as "MM-dd-yyyy"
+                                SimpleDateFormat outputFormat = new SimpleDateFormat("MM-DD-YYYY");
+                                articleDate = outputFormat.format(date);
+                        	}
+                      
                         } else if (countryConfig.getCountryName().equals("Belgium") || countryConfig.getCountryName().equals("Germany") || countryConfig.getCountryName().equals("EU") || countryConfig.getCountryName().equals("UK")) {
                             articleDate = item.select(metadataSelector).attr("datetime");
-                        } else if (countryConfig.getCountryName().equals("Netherlands")) {
+                        } else if (countryConfig.getCountryName().equals("Netherland")) {
                             String metaData = item.select(metadataSelector).text();
                             String[] parts = metaData.split(" \\| ");
                             if (parts.length > 1) {
@@ -210,57 +198,132 @@ public class SeleniumCrawler {
         });
     }
 
-
+    private boolean newsTitleExists(Connection connection, int countryId, String newsTitle) throws SQLException {
+        String query = "SELECT COUNT(*) FROM crawlerresult WHERE country_id = ? AND news_title = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, countryId);
+            preparedStatement.setString(2, newsTitle);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    int count = resultSet.getInt(1);
+                    return count > 0;
+                }
+            }
+        }
+        return false;
+    }
     
 
+
+ 
     private void handleResults(Element item, String articleTitle, String articleDate) {
-    	if (countryConfig.getCountryName().equals("Italy") || countryConfig.getCountryName().equals("Portugal")) {
-        // For Italy, update the selector to target "news_title_teaser" element
-        String updatedArticleTitle = item.select(countryConfig.getNewsTeaserSelector()).text();
+        if (countryConfig.getCountryName().equals("Italy") || countryConfig.getCountryName().equals("Portugal")) {
+            String updatedArticleTitle = item.select(countryConfig.getNewsTeaserSelector()).text();
 
-        if (articleTitle.toLowerCase().contains(keyword)) {
-            containsKeywordArticles.put(updatedArticleTitle, articleDate);
-        }
-        
-        // Fetch strong and weak relation keywords for the current country
-        List<String> strongRelationKeywords = countryConfig.fetchKeywordsForRelation("Strong relationship");
-        List<String> weakRelationKeywords = countryConfig.fetchKeywordsForRelation("Weak relationship");
+            if (articleTitle.toLowerCase().contains(keyword)) {
+                containsKeywordArticles.put(updatedArticleTitle, articleDate);
+                insertOrUpdateCrawlerResult(updatedArticleTitle, articleDate);
+            }
 
-        if (articleTitle.toLowerCase().contains(keyword) && (isStrongRelationship(articleTitle, strongRelationKeywords) || isWeakRelationship(articleTitle, weakRelationKeywords))) {
-            weakAndStrongRelationshipArticles.put(updatedArticleTitle, articleDate);
+            // Fetch strong and weak relation keywords for the current country
+            List<String> strongRelationKeywords = countryConfig.fetchKeywordsForRelation("Strong relationship");
+            List<String> weakRelationKeywords = countryConfig.fetchKeywordsForRelation("Weak relationship");
+
+            if (articleTitle.toLowerCase().contains(keyword) && (isStrongRelationship(articleTitle, strongRelationKeywords) || isWeakRelationship(articleTitle, weakRelationKeywords))) {
+                weakAndStrongRelationshipArticles.put(updatedArticleTitle, articleDate);
+                insertOrUpdateCrawlerResult(updatedArticleTitle, articleDate);
+            }
+
+            if (articleTitle.toLowerCase().contains(keyword) && isStrongRelationship(articleTitle, strongRelationKeywords)) {
+                strongRelationshipArticles.put(updatedArticleTitle, articleDate);
+                insertOrUpdateCrawlerResult(updatedArticleTitle, articleDate);
+            }
+
+            if (articleTitle.toLowerCase().contains(keyword) && isWeakRelationship(articleTitle, weakRelationKeywords)) {
+                weakRelationshipArticles.put(updatedArticleTitle, articleDate);
+                insertOrUpdateCrawlerResult(updatedArticleTitle, articleDate);
+            }
+        } else {
+            if (articleTitle.toLowerCase().contains(keyword)) {
+                containsKeywordArticles.put(articleTitle, articleDate);
+                insertOrUpdateCrawlerResult(articleTitle, articleDate);
+
+            }
+
+            // Fetch strong and weak relation keywords for the current country
+            List<String> strongRelationKeywords = countryConfig.fetchKeywordsForRelation("Strong relationship");
+            List<String> weakRelationKeywords = countryConfig.fetchKeywordsForRelation("Weak relationship");
+
+            if (articleTitle.toLowerCase().contains(keyword) && (isStrongRelationship(articleTitle, strongRelationKeywords) || isWeakRelationship(articleTitle, weakRelationKeywords))) {
+                weakAndStrongRelationshipArticles.put(articleTitle, articleDate);
+                insertOrUpdateCrawlerResult(articleTitle, articleDate);
+
+            }
+
+            if (articleTitle.toLowerCase().contains(keyword) && isStrongRelationship(articleTitle, strongRelationKeywords)) {
+                strongRelationshipArticles.put(articleTitle, articleDate);
+                insertOrUpdateCrawlerResult(articleTitle, articleDate);
+
+            }
+
+            if (articleTitle.toLowerCase().contains(keyword) && isWeakRelationship(articleTitle, weakRelationKeywords)) {
+                weakRelationshipArticles.put(articleTitle, articleDate);
+                insertOrUpdateCrawlerResult(articleTitle, articleDate);
+
+            }
+        	}
         }
 
-        if (articleTitle.toLowerCase().contains(keyword) && isStrongRelationship(articleTitle, strongRelationKeywords)) {
-            strongRelationshipArticles.put(updatedArticleTitle, articleDate);
-        }
+    private void insertOrUpdateCrawlerResult(String newsTitle, String articleDate) {
+        try (Connection connection = DatabaseHandler.connect()) {
+            // Assuming you have a method getId() in CountryConfiguration
+            int countryId = countryConfig.getId();
 
-        if (articleTitle.toLowerCase().contains(keyword) && isWeakRelationship(articleTitle, weakRelationKeywords)) {
-            weakRelationshipArticles.put(updatedArticleTitle, articleDate);
-        }
-    	} else {
-        if (articleTitle.toLowerCase().contains(keyword)) {
-            containsKeywordArticles.put(articleTitle, articleDate);
-        }
+            // Manually incrementing the id value
+            int nextId = 0;
 
-        // Fetch strong and weak relation keywords for the current country
-        List<String> strongRelationKeywords = countryConfig.fetchKeywordsForRelation("Strong relationship");
-        List<String> weakRelationKeywords = countryConfig.fetchKeywordsForRelation("Weak relationship");
+            // Query the maximum id value from the table and increment it
+            String getMaxIdQuery = "SELECT MAX(id) FROM CrawlerResult";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(getMaxIdQuery);
+                 ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    nextId = resultSet.getInt(1) + 1;
+                }
+            }
 
-        if (articleTitle.toLowerCase().contains(keyword) && (isStrongRelationship(articleTitle, strongRelationKeywords) || isWeakRelationship(articleTitle, weakRelationKeywords))) {
-            weakAndStrongRelationshipArticles.put(articleTitle, articleDate);
-        }
+            // Check if the news_title already exists
+            if (newsTitleExists(connection, countryId, newsTitle)) {
+                // Update query
+                String updateQuery = "UPDATE crawlerresult SET updated_date = ? WHERE country_id = ? AND news_title = ?";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+                    // Parse the articleDate and set it as a Date parameter
+                    preparedStatement.setDate(1, java.sql.Date.valueOf(articleDate));
+                    preparedStatement.setInt(2, countryId);
+                    preparedStatement.setString(3, newsTitle);
 
-        if (articleTitle.toLowerCase().contains(keyword) && isStrongRelationship(articleTitle, strongRelationKeywords)) {
-            strongRelationshipArticles.put(articleTitle, articleDate);
-        }
+                    // Execute the update query
+                    preparedStatement.executeUpdate();
+                }
+            } else {
+                // Insert query with specifying the id column
+                String insertQuery = "INSERT INTO crawlerresult (id, country_id, news_title, updated_date) VALUES (?, ?, ?, ?)";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
+                    preparedStatement.setInt(1, nextId);
+                    preparedStatement.setInt(2, countryId);
+                    preparedStatement.setString(3, newsTitle);
 
-        if (articleTitle.toLowerCase().contains(keyword) && isWeakRelationship(articleTitle, weakRelationKeywords)) {
-            weakRelationshipArticles.put(articleTitle, articleDate);
+                    // Parse the articleDate and set it as a Date parameter
+                    preparedStatement.setDate(4, java.sql.Date.valueOf(articleDate));
+
+                    // Execute the insert query
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            // Log the exception or perform custom exception handling
+            System.err.println("An error occurred while processing the database: " + e.getMessage());
         }
-    	}
     }
-
-
     private Boolean isStrongRelationship(String titleText, List<String> strongRelationKeywords) {
         for (String keyword : strongRelationKeywords) {
             if (titleText.toLowerCase().contains(keyword.toLowerCase())) {
@@ -306,7 +369,7 @@ public class SeleniumCrawler {
     }
     public static void main(String[] args) {
         // Retrieve configurations from the database for each country
-        CountryConfiguration countryConfig = CountryConfiguration.getCountryConfigurationFromDatabase("France");
+        CountryConfiguration countryConfig = CountryConfiguration.getCountryConfigurationFromDatabase("Germany");
 
         // Fetch the number of threads from the country configuration
         int numberOfThreads = countryConfig.getNumberOfThreads();

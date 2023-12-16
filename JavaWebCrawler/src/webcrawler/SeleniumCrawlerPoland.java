@@ -192,7 +192,7 @@ public class SeleniumCrawlerPoland {
     
     // comment out the code if you are connecting to gui
     public static void main(String[] args) {
-    	SeleniumCrawlerPoland crawler = new SeleniumCrawlerPoland("https://www.gov.pl/web/diplomacy/news-", "climate", 10, 10);
+    	SeleniumCrawlerPoland crawler = new SeleniumCrawlerPoland("https://www.gov.pl/web/diplomacy/news-", "climate", 100, 150);
         crawler.start();
     }
 }

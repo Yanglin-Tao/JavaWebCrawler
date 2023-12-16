@@ -16,6 +16,9 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 // Parsing through the paragraph part of each article as titles don't contain the keyword
 
@@ -121,6 +124,13 @@ public class SeleniumCrawlerItaly {
                     synchronized (weakAndStrongRelationshipArticles) {
                         String articleTitle = item.select("p").text();
                         String articleDate = item.select("div.h6.clearfix.dataleft").text();
+                        
+                     // Convert the date format
+                        SimpleDateFormat originalFormat = new SimpleDateFormat("d MMMM yyyy");
+                        SimpleDateFormat targetFormat = new SimpleDateFormat("MM-dd-yyyy");
+                        Date date = originalFormat.parse(articleDate);
+                        articleDate = targetFormat.format(date);
+                        
                         handleResults(item,articleTitle, articleDate);
                     }
                 }
@@ -201,7 +211,7 @@ public class SeleniumCrawlerItaly {
     // comment out the code if you are connecting to gui
     public static void main(String[] args) {
         //EUCrawler crawler = new EUCrawler("https://european-union.europa.eu/news-and-events/news-and-stories_en", "climate", 50, 50);
-    	SeleniumCrawlerItaly crawler = new SeleniumCrawlerItaly("https://www.governo.it/en/notizie-chigi-en", "climate", 100, 150);
+    	SeleniumCrawlerItaly crawler = new SeleniumCrawlerItaly("https://www.governo.it/en/notizie-chigi-en", "climate", 50, 50);
         crawler.start();
     }
 }

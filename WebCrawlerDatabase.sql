@@ -270,3 +270,20 @@ INSERT INTO Country (
     'MM-DD-YYYY', 
     100
 );
+
+
+-- Run the below code seprately to make this update in the "country" table:
+-- //-- Update date format for France
+-- UPDATE Country
+-- SET date_format = 'MM-DD-YYYY'
+-- WHERE country_name = 'France';
+
+-- -- Update date format for Italy
+-- UPDATE Country
+-- SET date_format = 'MM-DD-YYYY'
+-- WHERE country_name = 'Italy';
+
+-- -- Update date format for Portugal
+-- UPDATE Country
+-- SET date_format = 'MM-DD-YYYY'
+-- WHERE country_name = 'Portugal';
