@@ -369,7 +369,7 @@ public class SeleniumCrawler {
     }
     public static void main(String[] args) {
         // Retrieve configurations from the database for each country
-        CountryConfiguration countryConfig = CountryConfiguration.getCountryConfigurationFromDatabase("Germany");
+        CountryConfiguration countryConfig = CountryConfiguration.getCountryConfigurationFromDatabase("Italy");
 
         // Fetch the number of threads from the country configuration
         int numberOfThreads = countryConfig.getNumberOfThreads();
