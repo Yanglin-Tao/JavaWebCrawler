@@ -123,20 +123,26 @@ public class SeleniumCrawlerFrance {
                         String articleTitle = item.select("h4").text();
                         System.out.println(articleTitle);
                         String articleDate = item.select("p.fr-card__detail").text();
-                        if (!articleDate.isEmpty()) {
-                            // Parse the date from "Publié 15/12/2023" format
-                            SimpleDateFormat inputFormat = new SimpleDateFormat("'Publié' MM/DD/YYYY", Locale.FRENCH);
-                            Date date = inputFormat.parse(articleDate);
+                                      	
+                    	if (!articleDate.isEmpty()) {
+                    		// Split the string on "Publié " and take the second part
+                    	    String[] parts = articleDate.split("Publié ");
+                    	    if (parts.length > 1) {
+                    	        articleDate = parts[1];
 
-                            // Format the date as "MM-dd-yyyy"
-                            SimpleDateFormat outputFormat = new SimpleDateFormat("MM-DD-YYYY");
-                            articleDate = outputFormat.format(date);
+                    	        // Parse the date from "09/12/2022" format
+                    	        SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
+                    	        Date date = inputFormat.parse(articleDate);
+
+                    	        // Format the date as "MM-dd-yyyy"
+                    	        SimpleDateFormat outputFormat = new SimpleDateFormat("MM-dd-yyyy");
+                    	        articleDate = outputFormat.format(date);
                     	}
                         handleResults(articleTitle, articleDate);
                     }
                 }
                 
-            } catch (Exception e) {
+                }} catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 driver.close();

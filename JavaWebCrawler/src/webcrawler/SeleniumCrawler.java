@@ -86,25 +86,25 @@ public class SeleniumCrawler {
         totalTime = endTime - startTime;
         System.out.println("Total execution time: " + totalTime / 1000 + " s");
 
-//        printResults(containsKeywordArticles, "Number of articles containing keyword");
-//        System.out.println("---------------------------------------------------------------------------------------");
-//
-//        printResults(weakAndStrongRelationshipArticles, "Number of articles with weak or strong relationship found");
-//        System.out.println("---------------------------------------------------------------------------------------");
-//
-//        printResults(strongRelationshipArticles, "Number of articles with strong relationship found");
-//        System.out.println("---------------------------------------------------------------------------------------");
-//
-//        printResults(weakRelationshipArticles, "Number of articles with weak relationship found");
-//        System.out.println("---------------------------------------------------------------------------------------");
+        printResults(containsKeywordArticles, "Number of articles containing keyword");
+        System.out.println("---------------------------------------------------------------------------------------");
+
+        printResults(weakAndStrongRelationshipArticles, "Number of articles with weak or strong relationship found");
+        System.out.println("---------------------------------------------------------------------------------------");
+
+        printResults(strongRelationshipArticles, "Number of articles with strong relationship found");
+        System.out.println("---------------------------------------------------------------------------------------");
+
+        printResults(weakRelationshipArticles, "Number of articles with weak relationship found");
+        System.out.println("---------------------------------------------------------------------------------------");
     }
 
-//    private void printResults(Map<String, String> resultMap, String message) {
-//        for (Map.Entry<String, String> entry : resultMap.entrySet()) {
-//            System.out.println(entry.getKey() + " - Updated on: " + entry.getValue());
-//        }
-//        System.out.println(message + ": " + resultMap.size());
-//    }
+    private void printResults(Map<String, String> resultMap, String message) {
+        for (Map.Entry<String, String> entry : resultMap.entrySet()) {
+            System.out.println(entry.getKey() + " - Updated on: " + entry.getValue());
+        }
+        System.out.println(message + ": " + resultMap.size());
+    }
 
     private void crawl(String url) {
         if (visitedUrls.contains(url)) {
@@ -139,17 +139,17 @@ public class SeleniumCrawler {
                             Date parsedDate = inputFormat.parse(articleDate);
 
                             // Convert the date to "MM-dd-yyyy" format
-                            SimpleDateFormat outputFormat = new SimpleDateFormat("MM-dd-yyyy");
+                            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
                             articleDate  = outputFormat.format(parsedDate);
 
                             
                         } else if (countryConfig.getCountryName().equals("Portugal")) {
                         	articleDate = item.select(metadataSelector).text();
                         	// Convert the date format
-                            SimpleDateFormat inputFormat = new SimpleDateFormat("YYYY-MM-DD 'at' HH'h'mm");
+                            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd 'at' HH'h'mm");
                             Date date = inputFormat.parse(articleDate);
 
-                            SimpleDateFormat outputFormat = new SimpleDateFormat("MM-DD-YYYY");
+                            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
                             articleDate = outputFormat.format(date);
                             
                       
@@ -157,24 +157,44 @@ public class SeleniumCrawler {
                         	articleDate = item.select(metadataSelector).text();
                         	
                         	if (!articleDate.isEmpty()) {
-                                // Parse the date from "Publié 15/12/2023" format
-                                SimpleDateFormat inputFormat = new SimpleDateFormat("'Publié' MM/DD/YYYY", Locale.FRENCH);
-                                Date date = inputFormat.parse(articleDate);
+                        		// Split the string on "Publié " and take the second part
+                        	    String[] parts = articleDate.split("Publié ");
+                        	    if (parts.length > 1) {
+                        	        articleDate = parts[1];
 
-                                // Format the date as "MM-dd-yyyy"
-                                SimpleDateFormat outputFormat = new SimpleDateFormat("MM-DD-YYYY");
-                                articleDate = outputFormat.format(date);
+                        	        // Parse the date from "09/12/2022" format
+                        	        SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
+                        	        Date date = inputFormat.parse(articleDate);
+
+                        	        // Format the date as "MM-dd-yyyy"
+                        	        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        	        articleDate = outputFormat.format(date);
                         	}
                       
                         } else if (countryConfig.getCountryName().equals("Belgium") || countryConfig.getCountryName().equals("Germany") || countryConfig.getCountryName().equals("EU") || countryConfig.getCountryName().equals("UK")) {
                             articleDate = item.select(metadataSelector).attr("datetime");
+                            //extra
+                            // Parse the date from "YYYY-MM-DD" format
+                            SimpleDateFormat inputFormat = new SimpleDateFormat("YYYY-MM-DD");
+                            Date date = inputFormat.parse(articleDate);
+
+                            // Format the date as "yyyy-MM-dd"
+                            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            articleDate = outputFormat.format(date);
                         } else if (countryConfig.getCountryName().equals("Netherland")) {
                             String metaData = item.select(metadataSelector).text();
                             String[] parts = metaData.split(" \\| ");
                             if (parts.length > 1) {
                                 String[] dateParts = parts[1].split("[–-]");
                                 if (dateParts.length == 3) {
-                                    articleDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
+//                                    articleDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
+                                	// Parse the date from "MM-dd-yyyy" format
+                                    SimpleDateFormat inputFormat = new SimpleDateFormat("MM-dd-yyyy");
+                                    Date date = inputFormat.parse(dateParts[2] + "-" + dateParts[0] + "-" + dateParts[1]);
+
+                                    // Format the date as "yyyy-MM-dd"
+                                    SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+                                    articleDate = outputFormat.format(date);
                                 } else {
                                     articleDate = "Date cannot be formatted";
                                 }
@@ -184,13 +204,13 @@ public class SeleniumCrawler {
                         } else {
                             // Handle the case for other countries if needed
                             articleDate = "Date handling not implemented for this country";
-                        }
+                        } 
 
                         handleResults(item, articleTitle, articleDate);
                     }
                 }
 
-            } catch (Exception e) {
+                }} catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 driver.close();
@@ -369,14 +389,40 @@ public class SeleniumCrawler {
     }
     public static void main(String[] args) {
         // Retrieve configurations from the database for each country
-        CountryConfiguration countryConfig = CountryConfiguration.getCountryConfigurationFromDatabase("Germany");
+        CountryConfiguration countryConfig = CountryConfiguration.getCountryConfigurationFromDatabase("France");
 
         // Fetch the number of threads from the country configuration
         int numberOfThreads = countryConfig.getNumberOfThreads();
+        SeleniumCrawler crawler;
 
-        // Create the SeleniumCrawler with the retrieved configurations
-        SeleniumCrawler crawler = new SeleniumCrawler(countryConfig, "climate", numberOfThreads, 50);
+        // Check if the country name is "France"
+        if ("France".equals(countryConfig.getCountryName())) {
+            // Create the SeleniumCrawler with the retrieved configurations
+            crawler = new SeleniumCrawler(countryConfig, "climat", numberOfThreads, 150);
+        } else {
+            // Create the SeleniumCrawler with the retrieved configurations
+            crawler = new SeleniumCrawler(countryConfig, "climate", numberOfThreads, 174);
+        }
+
         crawler.start();
     }
+
+//    public static void main(String[] args) {
+//        // Retrieve configurations from the database for each country
+//        CountryConfiguration countryConfig = CountryConfiguration.getCountryConfigurationFromDatabase("France");
+//
+//        // Fetch the number of threads from the country configuration
+//        int numberOfThreads = countryConfig.getNumberOfThreads();
+//        SeleniumCrawler crawler;
+//
+//        if (countryConfig.equals("France")) {
+//        // Create the SeleniumCrawler with the retrieved configurations
+//        crawler = new SeleniumCrawler(countryConfig, "climat", numberOfThreads, 150);
+//        } else {
+//            // Create the SeleniumCrawler with the retrieved configurations
+//        crawler = new SeleniumCrawler(countryConfig, "climate", numberOfThreads, 174);
+//       }
+//        crawler.start();
+//    }
 
 }

@@ -127,7 +127,7 @@ public class SeleniumCrawlerItaly {
                         
                      // Convert the date format
                         SimpleDateFormat originalFormat = new SimpleDateFormat("d MMMM yyyy");
-                        SimpleDateFormat targetFormat = new SimpleDateFormat("MM-dd-yyyy");
+                        SimpleDateFormat targetFormat = new SimpleDateFormat("yyyy-MM-dd");
                         Date date = originalFormat.parse(articleDate);
                         articleDate = targetFormat.format(date);
                         
