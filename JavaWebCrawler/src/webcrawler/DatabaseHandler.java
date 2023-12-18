@@ -7,7 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -124,20 +127,52 @@ public class DatabaseHandler {
         return countryNames;
     }
     
-    public void fetchStatistics(String countryName) {
+    public static Map<String, Map<String, Integer>> fetchStatistics(String countryName) {
+        Map<String, Map<String, Integer>> stats = new LinkedHashMap<>(); 
+        
         try (Connection connection = connect()) {
             int countryId = getCountryId(connection, countryName);
             if (countryId == -1) {
                 System.out.println("Country not found.");
-                return;
+                return stats;
             }
+            
+            List<Period> periods = Arrays.asList(
+                new Period(0, 1),
+                new Period(1, 3),
+                new Period(3, 6),
+                new Period(6, 12),
+                new Period(12, -1)
+            );
 
-            Map<String, Map<String, Integer>> stats = new HashMap<>();
-            stats.put("1 Month", getStatsForPeriod(connection, countryId, 1));
-            stats.put("3 Months", getStatsForPeriod(connection, countryId, 3));
-            stats.put("6 Months", getStatsForPeriod(connection, countryId, 6));
-            stats.put("12 Months", getStatsForPeriod(connection, countryId, 12));
-            stats.put("Over 12 Months", getStatsForPeriod(connection, countryId, -1));
+            for (Period period : periods) {
+                int startMonths = period.getStartMonths();
+                int endMonths = period.getEndMonths();
+                
+                String periodLabel;
+                if (endMonths == -1) {
+                    periodLabel = "Over 12 Months";
+                } else {
+                    periodLabel = startMonths + "-" + endMonths + " months";
+                }
+
+                LocalDate startDate;
+                LocalDate endDate;
+
+                if (endMonths == -1) {
+                    endDate = LocalDate.now().minusMonths(12);
+                    startDate = getEarliestDate(connection, countryId);
+                } else {
+                    endDate = LocalDate.now().minusMonths(startMonths);
+                    startDate = LocalDate.now().minusMonths(endMonths);
+                }
+
+                System.out.println("Statistics for period: " + periodLabel);
+                
+                Map<String, Integer> periodStats = getStatsForPeriod(connection, countryId, startDate, endDate);
+
+                stats.put(periodLabel, periodStats);
+            }
 
             System.out.println("Statistics for country: " + countryName);
             stats.forEach((period, stat) -> {
@@ -146,9 +181,10 @@ public class DatabaseHandler {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return stats;
     }
     
-    private int getCountryId(Connection connection, String countryName) throws SQLException {
+    private static int getCountryId(Connection connection, String countryName) throws SQLException {
         String query = "SELECT id FROM Country WHERE country_name = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, countryName);
@@ -160,10 +196,8 @@ public class DatabaseHandler {
         return -1;
     }
     
-    private Map<String, Integer> getStatsForPeriod(Connection connection, int countryId, int months) throws SQLException {
+    private static Map<String, Integer> getStatsForPeriod(Connection connection, int countryId, LocalDate startDate, LocalDate endDate) throws SQLException {
         Map<String, Integer> stats = new HashMap<>();
-        LocalDate endDate = LocalDate.now();
-        LocalDate startDate = months > 0 ? endDate.minusMonths(months) : LocalDate.MIN;
 
         String query = "SELECT r.id, COUNT(rr.relation_id) as relation_count, rel.relation " +
                        "FROM CrawlerResult r " +
@@ -171,18 +205,43 @@ public class DatabaseHandler {
                        "LEFT JOIN Relation rel ON rr.relation_id = rel.id " +
                        "WHERE r.country_id = ? AND r.updated_date BETWEEN ? AND ? " +
                        "GROUP BY r.id, rel.relation";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, countryId);
-            stmt.setDate(2, java.sql.Date.valueOf(startDate));
-            stmt.setDate(3, java.sql.Date.valueOf(endDate));
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                String relation = rs.getString("relation");
-                int count = rs.getInt("relation_count");
-                stats.put(relation, stats.getOrDefault(relation, 0) + count);
-            }
+        
+        if (startDate.isBefore(endDate)) {
+	        try (PreparedStatement statement = connection.prepareStatement(query)) {
+	            statement.setInt(1, countryId);
+	            statement.setDate(2, java.sql.Date.valueOf(startDate));
+	            statement.setDate(3, java.sql.Date.valueOf(endDate));
+	            ResultSet resultSet = statement.executeQuery();
+	            while (resultSet.next()) {
+	                String relation = resultSet.getString("relation");
+	                int count = resultSet.getInt("relation_count");
+	                stats.put(relation, stats.getOrDefault(relation, 0) + count);
+	            }
+	        }
+	
+	        System.out.println("Stats for period: " + startDate + " to " + endDate);
+	        stats.forEach((relation, count) -> {
+	            System.out.println(relation + ": " + count);
+	        });
         }
+
         return stats;
     }
-
+    
+    private static LocalDate getEarliestDate(Connection connection, int countryId) throws SQLException {
+        String query = "SELECT MIN(updated_date) AS earliest_date FROM CrawlerResult WHERE country_id = ?";
+        
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, countryId);
+            ResultSet resultSet = statement.executeQuery();
+            
+            if (resultSet.next()) {
+                LocalDate earliestDate = resultSet.getDate("earliest_date").toLocalDate();
+                System.out.println("Earliest record date: " + earliestDate);
+                return earliestDate;
+            }
+        }
+        
+        return LocalDate.MIN;
+    }
 }

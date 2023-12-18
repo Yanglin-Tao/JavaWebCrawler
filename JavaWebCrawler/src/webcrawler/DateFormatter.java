@@ -67,7 +67,6 @@ public class DateFormatter {
         		String[] dateParts = parts[1].split("[–-]");
         		if (dateParts.length == 3) {
         			String dateString = dateParts[1] + "-" + dateParts[0] + "-" + dateParts[2];
-        			System.out.println(dateString);
         			SimpleDateFormat inputFormat = new SimpleDateFormat(dateFormat);
         			Date date = inputFormat.parse(dateString);
 
