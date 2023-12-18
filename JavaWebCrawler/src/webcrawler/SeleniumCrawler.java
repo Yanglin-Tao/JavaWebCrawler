@@ -282,7 +282,7 @@ public class SeleniumCrawler {
     }
     
     public static void main(String[] args) {
-        CountryConfiguration countryConfig = CountryConfiguration.getCountryConfigurationFromDatabase("EU");
+        CountryConfiguration countryConfig = CountryConfiguration.getCountryConfigurationFromDatabase("Netherland");
 
         int numberOfThreads = countryConfig.getNumberOfThreads();
         SeleniumCrawler crawler;

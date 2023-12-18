@@ -66,8 +66,10 @@ public class DateFormatter {
         	if (parts.length > 1) {
         		String[] dateParts = parts[1].split("[–-]");
         		if (dateParts.length == 3) {
+        			String dateString = dateParts[1] + "-" + dateParts[0] + "-" + dateParts[2];
+        			System.out.println(dateString);
         			SimpleDateFormat inputFormat = new SimpleDateFormat(dateFormat);
-        			Date date = inputFormat.parse(dateParts[2] + "-" + dateParts[0] + "-" + dateParts[1]);
+        			Date date = inputFormat.parse(dateString);
 
         			SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
         			articleDate = outputFormat.format(date);
