@@ -8,6 +8,7 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -29,6 +30,8 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
+import webcrawler.CountryConfiguration;
+import webcrawler.DatabaseHandler;
 import webcrawler.SeleniumCrawler;
 
 public class WebCrawlerInterface extends JFrame{
@@ -51,8 +54,18 @@ public class WebCrawlerInterface extends JFrame{
 	private void crawlData() {
 		int maxPagesValue = Integer.parseInt(maxPagesTextField.getText());
 		
-        SeleniumCrawler crawler = new SeleniumCrawler("https://www.gov.uk/search/news-and-communications", "climate", 150, maxPagesValue);
+		CountryConfiguration countryConfig = CountryConfiguration.getCountryConfigurationFromDatabase("Sweden");
+
+        int numberOfThreads = countryConfig.getNumberOfThreads();
+        SeleniumCrawler crawler;
+
+        if ("France".equals(countryConfig.getCountryName())) {
+            crawler = new SeleniumCrawler(countryConfig, "climat", numberOfThreads, maxPagesValue);
+        } else {
+            crawler = new SeleniumCrawler(countryConfig, "climate", numberOfThreads, maxPagesValue);
+        }
         crawler.start();
+
         updateDatasetWithCrawledData(crawler);
         chartPanel.getChart().fireChartChanged();
         displayInformation(crawler);
@@ -222,8 +235,8 @@ public class WebCrawlerInterface extends JFrame{
     }
 	
     private JComboBox<String> createCountryComboBox() {
-        String[] countries = {"UK", "Germany", "France"};
-        JComboBox<String> comboBox = new JComboBox<>(countries);
+        List<String> countries = DatabaseHandler.getCountryNames();
+        JComboBox<String> comboBox = new JComboBox<>(countries.toArray(new String[0]));
         comboBox.setSelectedItem(selectedCountry);
         comboBox.addActionListener(e -> {
             selectedCountry = (String) comboBox.getSelectedItem();
