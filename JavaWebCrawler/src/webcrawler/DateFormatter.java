@@ -37,8 +37,8 @@ public class DateFormatter {
         	Date parsedDate = inputFormat.parse(articleDate);
         	SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
         	articleDate  = outputFormat.format(parsedDate);
-        } else if (metadataSelector.equals(".dateItem")) {
-        	// Portugal
+        } else if (metadataSelector.equals(".dateItem") || metadataSelector.equals("span.date")) {
+        	// Portugal, Norway
         	articleDate = item.select(metadataSelector).text();
         	SimpleDateFormat inputFormat = new SimpleDateFormat(dateFormat);
         	Date date = inputFormat.parse(articleDate);

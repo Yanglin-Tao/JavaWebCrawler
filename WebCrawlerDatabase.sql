@@ -270,3 +270,47 @@ INSERT INTO Country (
     'yyyy-MM-dd ''at'' HH''h''mm', 
     100
 );
+
+INSERT INTO Country (
+    id,
+    country_name,
+    root_URL,
+    list_items_selector,
+    news_title_selector,
+    news_teaser_selector,
+    metadata_selector,
+    date_format,
+    number_of_threads
+) VALUES (
+    9,
+    'Sweden',
+    'https://www.government.se/press-releases/',
+    'ul.list--block li:has(div.sortcompact)',
+    'div.sortcompact > a', 
+    '',
+    'time', 
+    'yyyy-MM-dd', 
+    5
+);
+
+INSERT INTO Country (
+    id,
+    country_name,
+    root_URL,
+    list_items_selector,
+    news_title_selector,
+    news_teaser_selector,
+    metadata_selector,
+    date_format,
+    number_of_threads
+) VALUES (
+    10,
+    'Norway',
+    'https://www.regjeringen.no/en/whatsnew/news-and-press-releases/id2006120/',
+    'ul.listing > li.listItem',
+    'h2.title > a', 
+    '',
+    'span.date', 
+    'dd/MM/yyyy', 
+    50
+);
