@@ -58,5 +58,44 @@ public class DatabaseHandler {
         }
         return null;
     }
+    
+    public static int getRelationId(String relation) {
+    	String query = "SELECT id FROM Relation WHERE relation = ?";
+    	int relationId = -1; 
+
+        try (Connection connection = connect();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setString(1, relation);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    relationId = resultSet.getInt("id");
+                } else {
+                    System.err.println("No relation found for: " + relation);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Failed to retrieve relation id from the database.");
+            e.printStackTrace();
+        }
+        return relationId;
+    }
+    
+    public static int getCrawlerResultId(Connection connection, int countryId, String newsTitle) {
+        String query = "SELECT id FROM CrawlerResult WHERE country_id = ? AND news_title = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, countryId);
+            preparedStatement.setString(2, newsTitle);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt("id");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Failed to retrieve result id from the database.");
+            e.printStackTrace();
+        }
+        return -1; 
+    }
 
 }

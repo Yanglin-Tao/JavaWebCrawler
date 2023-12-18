@@ -20,6 +20,7 @@ public class CountryConfiguration {
     private int numberOfThreads;
 
     public CountryConfiguration() {
+    	
     }
 
     public CountryConfiguration(int id, String countryName, String rootUrl, String listItemsSelector,
@@ -36,78 +37,40 @@ public class CountryConfiguration {
         this.numberOfThreads = numberOfThreads;
     }
 
-    // Getters and Setters
-
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getCountryName() {
         return countryName;
     }
 
-    public void setCountryName(String countryName) {
-        this.countryName = countryName;
-    }
-
     public String getRootUrl() {
         return rootUrl;
-    }
-
-    public void setRootUrl(String rootUrl) {
-        this.rootUrl = rootUrl;
     }
 
     public String getListItemsSelector() {
         return listItemsSelector;
     }
 
-    public void setListItemsSelector(String listItemsSelector) {
-        this.listItemsSelector = listItemsSelector;
-    }
-
     public String getNewsTitleSelector() {
         return newsTitleSelector;
-    }
-
-    public void setNewsTitleSelector(String newsTitleSelector) {
-        this.newsTitleSelector = newsTitleSelector;
     }
 
     public String getNewsTeaserSelector() {
         return newsTeaserSelector;
     }
 
-    public void setNewsTeaserSelector(String newsTeaserSelector) {
-        this.newsTeaserSelector = newsTeaserSelector;
-    }
-
     public String getMetadataSelector() {
         return metadataSelector;
-    }
-
-    public void setMetadataSelector(String metadataSelector) {
-        this.metadataSelector = metadataSelector;
     }
 
     public String getDateFormat() {
         return dateFormat;
     }
 
-    public void setDateFormat(String dateFormat) {
-        this.dateFormat = dateFormat;
-    }
-
     public int getNumberOfThreads() {
         return numberOfThreads;
-    }
-
-    public void setNumberOfThreads(int numberOfThreads) {
-        this.numberOfThreads = numberOfThreads;
     }
 
     public static CountryConfiguration getCountryConfigurationFromDatabase(String countryName) {
@@ -169,6 +132,6 @@ public class CountryConfiguration {
             e.printStackTrace();
             throw new RuntimeException("Failed to retrieve relation ID from the database.", e);
         }
-        return -1; // Return a default value if the relation is not found
+        return -1;
     }
 }

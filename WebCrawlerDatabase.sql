@@ -122,8 +122,8 @@ INSERT INTO Country (
     'https://www.gov.uk/search/news-and-communications',
     'ul.gem-c-document-list li.gem-c-document-list__item',
     'a.govuk-link', 
-    'datetime', 
-    'YYYY-MM-DD', 
+    'time', 
+    'yyyy-MM-dd', 
     150
 );
 
@@ -142,8 +142,8 @@ INSERT INTO Country (
     'https://european-union.europa.eu/news-and-events/news-and-stories_en',
     '.ecl-row .ecl-content-item-block__item',
     'h1', 
-    'datetime', 
-    'YYYY-MM-DD', 
+    'time', 
+    'yyyy-MM-dd''T''HH:mm:ss''Z''', 
     50
 );
 
@@ -162,8 +162,8 @@ INSERT INTO Country (
     'https://www.belgium.be/en/news/overview',
     '.view__content .view__row',
     'h3.node__title > a', 
-    'datetime', 
-    'YYYY-MM-DD', 
+    'time', 
+    'yyyy-MM-dd', 
     50
 );
 
@@ -183,7 +183,7 @@ INSERT INTO Country (
     'ol.results li.results__item',
     'h3', 
     'p.meta', 
-    'MM-DD-YYYY', 
+    'MM-dd-yyyy', 
     50
 );
 
@@ -202,8 +202,8 @@ INSERT INTO Country (
     'https://www.bundesregierung.de/breg-en/news',
     'ol.bpa-search-result-list li.bpa-search-result-full',
     'span.bpa-teaser-title-text-inner', 
-    'datetime', 
-    'YYYY-MM-DD', 
+    'time', 
+    'yyyy-MM-dd''T''HH:mm:ss''Z''', 
     50
 );
 
@@ -223,7 +223,7 @@ INSERT INTO Country (
     '.fr-grid-row.fr-grid-row--gutters.list.fr-my-0 .fr-card.fr-enlarge-link.fr-card--horizontal.fr-card--sm',
     'h4', 
     'p.fr-card__detail', 
-    'DD-MM-YYYY', 
+    'dd/MM/yyyy', 
     150
 );
 
@@ -245,7 +245,7 @@ INSERT INTO Country (
     'p', 
     'h2.h4',
     'div.h6.clearfix.dataleft', 
-    'DD Month YYYY', 
+    'dd MMMM yyyy', 
     100
 );
 
@@ -267,23 +267,6 @@ INSERT INTO Country (
     '.gov-texts-list', 
     'a.text:not(:has(*))',
     '.dateItem', 
-    'MM-DD-YYYY', 
+    'yyyy-MM-dd ''at'' HH''h''mm', 
     100
 );
-
-
--- Run the below code seprately to make this update in the "country" table:
--- //-- Update date format for France
--- UPDATE Country
--- SET date_format = 'dd MMMM yyyy'
--- WHERE country_name = 'France';
-
--- -- Update date format for Italy
--- UPDATE Country
--- SET date_format = 'dd MMMM yyyy'
--- WHERE country_name = 'Italy';
-
--- -- Update date format for Portugal
--- UPDATE Country
--- SET date_format = 'dd MMMM yyyy'
--- WHERE country_name = 'Portugal';

@@ -49,8 +49,8 @@ public class SeleniumCrawlerFrance {
         weakRelationKeywordList.add("changement");
         weakRelationKeywordList.add("risque");
         
-        System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
-        // System.setProperty("webdriver.chrome.driver", "/opt/homebrew/bin/chromedriver");
+        // System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "/opt/homebrew/bin/chromedriver");
 
     }
 
@@ -213,7 +213,6 @@ public class SeleniumCrawlerFrance {
         crawler.start();
     }
 }
-
 
 
 

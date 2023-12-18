@@ -7,6 +7,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -49,8 +50,8 @@ public class SeleniumCrawlerPortugal {
         weakRelationKeywordList.add("change");
         weakRelationKeywordList.add("risk");
         
-        System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
-        // System.setProperty("webdriver.chrome.driver", "/opt/homebrew/bin/chromedriver");
+        // System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "/opt/homebrew/bin/chromedriver");
 
     }
 
@@ -58,7 +59,7 @@ public class SeleniumCrawlerPortugal {
     	startTime = System.currentTimeMillis();
     	int pageNum = 1;
         while(pageNum <= maxPages) {
-            crawl(rootUrl + "?page=" + pageNum);
+            crawl(rootUrl + "?p=" + pageNum);
             pageNum++;
         }
         executorService.shutdown();
@@ -111,6 +112,10 @@ public class SeleniumCrawlerPortugal {
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--headless");
             WebDriver driver = new ChromeDriver(options);
+            driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+            driver.manage().timeouts().setScriptTimeout(30, TimeUnit.SECONDS);
+            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+            
             try {
                 driver.get(url);
                 String htmlContent = driver.getPageSource();
@@ -119,15 +124,36 @@ public class SeleniumCrawlerPortugal {
                 Elements newsItems = doc.select(".row .itemList");
 
                 for (Element item : newsItems) {
-                    synchronized (weakAndStrongRelationshipArticles) {
-                        String articleTitle = item.select(".gov-texts-list").text();
+//                    synchronized (weakAndStrongRelationshipArticles) {
+//                    	Element titleElement = item.select("a.text").first();
+//                        if (titleElement != null) { 
+//                            String title = titleElement.ownText();
+//                            System.out.println(title);
+//                        }
+//                    	
+//                        String teaser = item.select(".gov-texts-list").text();
+//
+//                        String articleDate = item.select(".dateItem").text();                       
+//                        // handleResults(item, teaser, articleDate);
+//                    }
+                	try {
+                        Element titleElement = item.select("a.text").first();
+                        if (titleElement != null) {
+                            String title = titleElement.ownText();
+                            System.out.println(title);
+                        }
 
-                        String articleDate = item.select(".dateItem").text()
-;                        handleResults(item, articleTitle, articleDate);
+                    } catch (Exception e) {	
+                        System.out.println("Error processing an item from: " + url);
+                        e.printStackTrace();
                     }
                 }
                 
+            } catch (TimeoutException e) {
+                System.out.println("Page load or script execution took too long: " + e.getMessage());
+                // Handle the timeout
             } catch (Exception e) {
+            	System.out.println("Error crawling URL: " + url);
                 e.printStackTrace();
             } finally {
                 driver.close();
@@ -135,7 +161,7 @@ public class SeleniumCrawlerPortugal {
         });
     }
     
-    private void handleResults(Element item, String articleTitle, String articleDate) {
+    private void handleResults(Element item, String teaser, String articleDate) {
         SimpleDateFormat originalDateFormat = new SimpleDateFormat("YYYY-MM-DD 'at' HH'h'mm");
         SimpleDateFormat outputDateFormat = new SimpleDateFormat("MM-DD-YYYY"); // or "dd-MM-yyyy"
 
@@ -143,22 +169,22 @@ public class SeleniumCrawlerPortugal {
             Date parsedDate = originalDateFormat.parse(articleDate);
             String formattedDate = outputDateFormat.format(parsedDate);
 
-            if (articleTitle.toLowerCase().contains(keyword)) {
+            if (teaser.toLowerCase().contains(keyword)) {
                 String updatedArticleTitle = item.select("a.text:not(:has(*))").text();
                 containsKeywordArticles.put(updatedArticleTitle, formattedDate);
             }
 
-            if (articleTitle.toLowerCase().contains(keyword) && (isStrongRelationship(articleTitle.toLowerCase()) || (isWeakRelationship(articleTitle.toLowerCase())))) {
+            if (teaser.toLowerCase().contains(keyword) && (isStrongRelationship(teaser.toLowerCase()) || (isWeakRelationship(teaser.toLowerCase())))) {
                 String updatedArticleTitle = item.select("a.text:not(:has(*))").text();
                 weakAndStrongRelationshipArticles.put(updatedArticleTitle, formattedDate);
             }
 
-            if (articleTitle.toLowerCase().contains(keyword) && isStrongRelationship(articleTitle.toLowerCase())) {
+            if (teaser.toLowerCase().contains(keyword) && isStrongRelationship(teaser.toLowerCase())) {
                 String updatedArticleTitle = item.select("a.text:not(:has(*))").text();
                 strongRelationshipArticles.put(updatedArticleTitle, formattedDate);
             }
 
-            if (articleTitle.toLowerCase().contains(keyword) && isWeakRelationship(articleTitle.toLowerCase())) {
+            if (teaser.toLowerCase().contains(keyword) && isWeakRelationship(teaser.toLowerCase())) {
                 String updatedArticleTitle = item.select("a.text:not(:has(*))").text();
                 weakRelationshipArticles.put(updatedArticleTitle, formattedDate);
             }
@@ -213,11 +239,10 @@ public class SeleniumCrawlerPortugal {
     
     // comment out the code if you are connecting to gui
     public static void main(String[] args) {
-    	SeleniumCrawlerPortugal crawler = new SeleniumCrawlerPortugal("https://www.portugal.gov.pt/en/gc23/communication/news", "climate", 100, 174);
+    	SeleniumCrawlerPortugal crawler = new SeleniumCrawlerPortugal("https://www.portugal.gov.pt/en/gc23/communication/news", "climate", 50, 55);
         crawler.start();
     }
 }
-
 
 
 
