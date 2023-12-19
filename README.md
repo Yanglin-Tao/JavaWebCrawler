@@ -4,9 +4,16 @@ A multi-threaded Java web crawler project to extract data from government websit
 #### _Yanglin Tao, Oct 29, 2023_
 
 ### Project Setup
+MAC OS:
 1. Download chromedriver with Homebrew (MacOS) by running this command `brew install chromedriver`. 
 2. If prompted that “chromedriver” can’t be opened because Apple cannot check it for malicious software, go to System Settings > Security & Privacy, and you should see a message about chromedriver being blocked. In that case, click `Open Anyway` to force open the application.
 3. Run `which chromedriver` to verify its path. Copy and paste the path to SeleniumCrawler.
+
+WINDOWS:
+1. Make sure you are using the latest version of “Google Chrome”, if not, update it to the latest version before installing chromedriver.
+2. Download chromedriver with Chocolatey by running the following command in PowerShell (run as administrator): choco install chromedriver
+3. Run “chromedriver - -version” to verify that the chromedriver has been successfully installed.
+
 
 ### Database Setup
 1. Download postgresql and pgAdmin tool.
