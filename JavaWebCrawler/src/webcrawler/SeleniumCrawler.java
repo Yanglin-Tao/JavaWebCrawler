@@ -21,6 +21,12 @@ import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+/**
+ * 
+ * Web crawler to retrieve data from websites
+ *
+ */
+
 public class SeleniumCrawler {
 
     private final CountryConfiguration countryConfig;
@@ -51,10 +57,10 @@ public class SeleniumCrawler {
         this.strongRelationshipArticles = new HashMap<>();
         this.weakRelationshipArticles = new HashMap<>();
         this.executorService = Executors.newFixedThreadPool(numThreads);
-        this.strongRelationKeywordList = countryConfig.fetchKeywordsForRelation("Strong relationship");
-        this.weakRelationKeywordList = countryConfig.fetchKeywordsForRelation("Weak relationship");
+        this.strongRelationKeywordList = DatabaseHandler.fetchKeywordsForRelation("Strong relationship");
+        this.weakRelationKeywordList = DatabaseHandler.fetchKeywordsForRelation("Weak relationship");
 
-        // System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\chocolatey\\bin\\chromedriver.exe");
+        // Replace the following with your local chromedriver path
         System.setProperty("webdriver.chrome.driver", "/opt/homebrew/bin/chromedriver");
     }
 
@@ -156,7 +162,7 @@ public class SeleniumCrawler {
  
     private void handleResults(Element item, String articleTitle, String articleDate) {
         
-        if (countryConfig.getCountryName().equals("Italy") || countryConfig.getCountryName().equals("Portugal")) {
+        if (countryConfig.getCountryName().equals("Italy")) {
             String updatedArticleTitle = item.select(countryConfig.getNewsTeaserSelector()).text();
 
             if (articleTitle.toLowerCase().contains(keyword)) {
@@ -279,20 +285,5 @@ public class SeleniumCrawler {
 
     public int getMaxPages() {
         return maxPages;
-    }
-    
-    public static void main(String[] args) {
-        CountryConfiguration countryConfig = CountryConfiguration.getCountryConfigurationFromDatabase("Sweden");
-
-        int numberOfThreads = countryConfig.getNumberOfThreads();
-        SeleniumCrawler crawler;
-
-        if ("France".equals(countryConfig.getCountryName())) {
-            crawler = new SeleniumCrawler(countryConfig, "climat", numberOfThreads, 150);
-        } else {
-            crawler = new SeleniumCrawler(countryConfig, "climate", numberOfThreads, 50);
-        }
-
-        crawler.start();
     }
 }

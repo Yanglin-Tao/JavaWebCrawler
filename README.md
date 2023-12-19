@@ -13,14 +13,15 @@ A multi-threaded Java web crawler project to extract data from government websit
 2. Create a database named 'webCrawler_db', use password 'root'.
 3. Use Query tool and run queries in WebCrawlerDatabase.sql to initialize the database.
 
-### Finding URLs to parse
-It's important to parse the correct base URL, use URLs like `https://www.gov.uk/search/news-and-communications` instead of generic ones for better results. 
-
-### Finding the metric elements
-In the current phase, the crawler should count the number of articles, i.e. article titles, containing keywords. Therefore the title must be located first. Go to Inspect Elements on the webpage, then locate the title element that share a same path or class selector. 
-
-### Scope of the search
-Both number of threads and number of webpages to crawl can be specified in the crawler.
-
 ### Troubleshooting
 If you encountered error like `org.openqa.selenium.SessionNotCreatedException: session not created`, it's likely that your ChromeDriver version is not compactible with your current Chrome browser version. In that case, run `brew install chromedriver` again and update Chrome browser to the latest version.
+
+### Guidelines on finding more websites to crawl
+#### Finding URLs to parse
+It's important to select and parse a suitable base URL, use URLs like `https://www.gov.uk/search/news-and-communications`, where a list of news titles and metadata about their update dates can be found. 
+
+#### Finding the metric elements
+The crawler counts the number of articles, i.e. article titles or teasers, containing keywords. Go to Inspect Elements on the webpage, then locate the title and metadata. 
+
+#### Scope of the search.
+The number of threads used for each each country vary based on how many pages will be parsed. We typically recommend using 150 threads for larger websites and 50 threads for smaller ones when creating new configuration to the Country table. The number of pages to be parsed is customizable through interface, and we recommend that the number of pages should be greater than number of threads.

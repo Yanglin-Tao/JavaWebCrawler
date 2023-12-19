@@ -5,6 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * 
+ * Handle insert keyword relations to database
+ *
+ */
+
 public class ResultRelationHandler {
 	private int resultId;
 	private int relationId;

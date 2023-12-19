@@ -29,6 +29,12 @@ import webcrawler.CountryConfiguration;
 import webcrawler.DatabaseHandler;
 import webcrawler.SeleniumCrawler;
 
+/**
+ * 
+ * Interface for web crawler
+ *
+ */
+
 public class WebCrawlerInterface extends JFrame {
     private static final int FRAME_WIDTH = 1000;
     private static final int FRAME_HEIGHT = 800;
@@ -50,16 +56,12 @@ public class WebCrawlerInterface extends JFrame {
     private void crawlData() {
         int maxPagesValue = Integer.parseInt(maxPagesTextField.getText());
 
-        CountryConfiguration countryConfig = CountryConfiguration.getCountryConfigurationFromDatabase(selectedCountry);
+        CountryConfiguration countryConfig = DatabaseHandler.getCountryConfigurationFromDatabase(selectedCountry);
 
         int numberOfThreads = countryConfig.getNumberOfThreads();
         SeleniumCrawler crawler;
 
-        if ("France".equals(selectedCountry)) {
-            crawler = new SeleniumCrawler(countryConfig, "climat", numberOfThreads, maxPagesValue);
-        } else {
-            crawler = new SeleniumCrawler(countryConfig, "climate", numberOfThreads, maxPagesValue);
-        }
+        crawler = new SeleniumCrawler(countryConfig, "climate", numberOfThreads, maxPagesValue);
         crawler.start();
 
         Map<String, Map<String, Integer>> statisticsMap = DatabaseHandler.fetchStatistics(countryConfig.getCountryName());

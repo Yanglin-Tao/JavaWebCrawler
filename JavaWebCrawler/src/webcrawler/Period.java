@@ -1,5 +1,11 @@
 package webcrawler;
 
+/**
+ * 
+ * Wrapper class for the months period
+ *
+ */
+
 public class Period {
 	private int startMonths;
     private int endMonths;

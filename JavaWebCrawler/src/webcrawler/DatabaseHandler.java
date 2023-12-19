@@ -8,11 +8,16 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+/**
+ * 
+ * Handle database operations
+ *
+ */
 
 public class DatabaseHandler {
 
@@ -67,12 +72,57 @@ public class DatabaseHandler {
         return null;
     }
     
+    public static CountryConfiguration getCountryConfigurationFromDatabase(String countryName) {
+        String query = "SELECT * FROM Country WHERE country_name = ?";
+        try (Connection connection = DatabaseHandler.connect();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, countryName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return new CountryConfiguration(
+                        resultSet.getInt("id"),
+                        resultSet.getString("country_name"),
+                        resultSet.getString("root_URL"),
+                        resultSet.getString("list_items_selector"),
+                        resultSet.getString("news_title_selector"),
+                        resultSet.getString("news_teaser_selector"),
+                        resultSet.getString("metadata_selector"),
+                        resultSet.getString("date_format"),
+                        resultSet.getInt("number_of_threads")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to retrieve country configuration from the database.", e);
+        }
+        return null;
+    }
+
+    public static List<String> fetchKeywordsForRelation(String relation) {
+        List<String> keywords = new ArrayList<>();
+        String query = "SELECT combination_keyword FROM CombinationKeyword " +
+                "WHERE relation_id = (SELECT id FROM Relation WHERE relation = ?)";
+        try (Connection connection = DatabaseHandler.connect();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, relation);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    keywords.add(resultSet.getString("combination_keyword"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to fetch keywords from the database.", e);
+        }
+        return keywords;
+    }
+    
     public static int getRelationId(String relation) {
     	String query = "SELECT id FROM Relation WHERE relation = ?";
     	int relationId = -1; 
 
         try (Connection connection = connect();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             
             preparedStatement.setString(1, relation);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -85,6 +135,7 @@ public class DatabaseHandler {
         } catch (SQLException e) {
             System.err.println("Failed to retrieve relation id from the database.");
             e.printStackTrace();
+            throw new RuntimeException("Failed to retrieve relation ID from the database.", e);
         }
         return relationId;
     }

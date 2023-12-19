@@ -213,32 +213,12 @@ INSERT INTO Country (
     root_URL,
     list_items_selector,
     news_title_selector,
-    metadata_selector,
-    date_format,
-    number_of_threads
-) VALUES (
-    6,
-    'France',
-    'https://www.gouvernement.fr/toute-l-actualite',
-    '.fr-grid-row.fr-grid-row--gutters.list.fr-my-0 .fr-card.fr-enlarge-link.fr-card--horizontal.fr-card--sm',
-    'h4', 
-    'p.fr-card__detail', 
-    'dd/MM/yyyy', 
-    150
-);
-
-INSERT INTO Country (
-    id,
-    country_name,
-    root_URL,
-    list_items_selector,
-    news_title_selector,
     news_teaser_selector,
     metadata_selector,
     date_format,
     number_of_threads
 ) VALUES (
-    7,
+    6,
     'Italy',
     'https://www.governo.it/en/notizie-chigi-en',
     '.row.half_base .box_text.box_text_small.clearfix',
@@ -260,29 +240,7 @@ INSERT INTO Country (
     date_format,
     number_of_threads
 ) VALUES (
-    8,
-    'Portugal',
-    'https://www.portugal.gov.pt/en/gc23/communication/news',
-    '.row .itemList',
-    '.gov-texts-list', 
-    'a.text:not(:has(*))',
-    '.dateItem', 
-    'yyyy-MM-dd ''at'' HH''h''mm', 
-    100
-);
-
-INSERT INTO Country (
-    id,
-    country_name,
-    root_URL,
-    list_items_selector,
-    news_title_selector,
-    news_teaser_selector,
-    metadata_selector,
-    date_format,
-    number_of_threads
-) VALUES (
-    9,
+    7,
     'Sweden',
     'https://www.government.se/press-releases/',
     'ul.list--block li:has(div.sortcompact)',
@@ -304,7 +262,7 @@ INSERT INTO Country (
     date_format,
     number_of_threads
 ) VALUES (
-    10,
+    8,
     'Norway',
     'https://www.regjeringen.no/en/whatsnew/news-and-press-releases/id2006120/',
     'ul.listing > li.listItem',

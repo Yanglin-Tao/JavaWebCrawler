@@ -4,8 +4,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
 import org.jsoup.nodes.Element;
+
+/**
+ * 
+ * Format dates from retrieved metadata
+ *
+ */
 
 public class DateFormatter {
 	private CountryConfiguration countryConfig;
@@ -37,28 +42,14 @@ public class DateFormatter {
         	Date parsedDate = inputFormat.parse(articleDate);
         	SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
         	articleDate  = outputFormat.format(parsedDate);
-        } else if (metadataSelector.equals(".dateItem") || metadataSelector.equals("span.date")) {
-        	// Portugal, Norway
+        } else if (metadataSelector.equals("span.date")) {
+        	// Norway
         	articleDate = item.select(metadataSelector).text();
         	SimpleDateFormat inputFormat = new SimpleDateFormat(dateFormat);
         	Date date = inputFormat.parse(articleDate);
 
         	SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
         	articleDate = outputFormat.format(date);
-        } else if (metadataSelector.equals("p.fr-card__detail")) {
-        	// France
-        	articleDate = item.select(metadataSelector).text();
-        	if (!articleDate.isEmpty()) {
-        	    String[] parts = articleDate.split("Publié ");
-        	    if (parts.length > 1) {
-        	        articleDate = parts[1];
-
-        	        SimpleDateFormat inputFormat = new SimpleDateFormat(dateFormat, Locale.FRENCH);
-        	        Date date = inputFormat.parse(articleDate);
-        	        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
-        	        articleDate = outputFormat.format(date);
-        	    }
-        	}
         } else if (metadataSelector.equals("p.meta")) {
         	// Netherland
         	String metaData = item.select(metadataSelector).text();
