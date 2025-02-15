@@ -1,7 +1,7 @@
 # JavaWebCrawler
 A multi-threaded Java web crawler project to extract data from government websites and analyze the overall trend on climate change and national security.
 
-#### _Yanglin Tao, Oct 29, 2023_
+#### _Yanglin Tao & Vaidisha Mehta, Oct 29, 2023_
 
 ### Project Setup
 MAC OS:
